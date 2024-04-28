@@ -1,5 +1,6 @@
 """
 Main flask app
+TODO environment variable for pickle file
 """
 from flask import Flask, render_template
 from volatility.lookup import api_call
