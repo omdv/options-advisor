@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment report</title>
+</head>
+
+<body>
+    <p>Assignment probability</p>
+    <p>VIX: {{ ctx['vix_open'] | quote }} ({{ ctx['vix_quote_date'] }})</p>
+    <p>Open to close: {{ ctx['otc_open'] | quote }}% ({{ ctx['otc_quote_date'] }})</p>
+    <p>{{ ctx['lookup']['number_of_samples'] }} samples: {{ ctx['lookup']['min_date'] }} to {{ ctx['lookup']['max_date'] }}</spa>
+    {{ ctx['lookup']['probs'] | safe }}
+</body>
+</html>
