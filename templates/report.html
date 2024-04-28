@@ -3,14 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Assignment report</title>
 </head>
 
 <body>
-    <p>Assignment probability</p>
-    <p>VIX: {{ ctx['vix_open'] | quote }} ({{ ctx['vix_quote_date'] }})</p>
-    <p>Open to close: {{ ctx['otc_open'] | quote }}% ({{ ctx['otc_quote_date'] }})</p>
-    <p>{{ ctx['lookup']['number_of_samples'] }} samples: {{ ctx['lookup']['min_date'] }} to {{ ctx['lookup']['max_date'] }}</spa>
-    {{ ctx['lookup']['probs'] | safe }}
+    <h1>Assignment statistics</h1>
+    <br\>
+    <table class="inputs">
+        <tr>
+            <td>VIX</td>
+            <td>{{ ctx['vix_open'] | quote }}</td>
+            <td class="dat">{{ ctx['vix_quote_date'] }}</td>
+        </tr>
+        <tr>
+            <td>o2c</td>
+            <td>{{ ctx['otc_open'] | quote }}%</td>
+            <td class="dat">{{ ctx['otc_quote_date'] }}</td>
+        </tr>
+    </table>
+    <!-- {{ ctx['lookup']['probs'] | safe }} -->
+    <img
+        src="data:image/svg+xml;base64,{{ ctx['lookup']['probs_heatmap'] }}"
+        alt="Probs heatmap image"
+        style="max-width: 100%; height: auto;"
+    />
+    <p class="sta">{{ ctx['lookup']['group_samples'] }} samples out of {{ ctx['lookup']['total_samples'] }} | {{ ctx['lookup']['min_date'] }} to {{ ctx['lookup']['max_date'] }}</spa>
 </body>
+<footer>
+    <p class="dat">Generated on {{ ctx['gen_timestamp'] }}</p>
+</footer>
 </html>

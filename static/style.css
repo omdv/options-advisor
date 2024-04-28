@@ -1,0 +1,112 @@
+/* Nord Color Scheme */
+:root {
+    /* Polar Night */
+    --nr00: #2e3440;
+    --nr01: #3b4252;
+    --nr02: #434c5e;
+    --nr03: #4c566a;
+  
+    /* Snow Storm */
+    --nr04: #d8dee9;
+    --nr05: #e5e9f0;
+    --nr06: #eceff4;
+  
+    /* Frost */
+    --nr07: #8fbcbb;
+    --nr08: #88c0d0;
+    --nr09: #81a1c1;
+    --nr10: #5e81ac;
+  
+    /* Aurora */
+    --nr11: #bf616a;
+    --nr12: #d08770;
+    --nr13: #ebcb8b;
+    --nr14: #a3be8c;
+    --nr15: #b48ead;
+}
+
+/* Media query for screens smaller than 600px */
+@media only screen and (max-width: 600px) {
+    .dat, .sta {
+        font-size: 8px; /* Medium font size for medium screens */
+    }
+}
+
+/* Media query for screens between 600px and 1200px */
+@media only screen and (min-width: 601px) and (max-width: 1200px) {
+    .dat, .sta {
+        font-size: 10px; /* Medium font size for medium screens */
+    }
+}
+
+/* Media query for screens larger than 1200px */
+@media only screen and (min-width: 1201px) {
+    .dat, .sta {
+        font-size: 12px; /* Medium font size for medium screens */
+    }
+}
+
+
+html {
+    font-family: sans-serif;
+    font-size: 14px;
+    color: var(--nr04);
+    background-color: var(--nr00);
+}
+
+body {
+    overflow-wrap: anywhere;
+    max-width: calc(100vw - 3em);
+    width: 78ch;
+    margin: 0 auto;
+}
+
+p {
+    margin: 0px;
+    padding: 0px;
+}
+
+h1 {
+    font-size: 16px;
+    margin: 0.5em 0;
+}
+
+/* dataframe table */
+.dataframe {
+    border-collapse: collapse;
+    font-size: 10px;
+    width: 100%;
+}
+.dataframe th, .dataframe td {
+    border: 1px solid var(--nr08);
+    text-align: left;
+    padding: 8px;
+}
+.dataframe tr:nth-child(even) {
+    background-color: var(--nr03);
+}
+
+/* inputs table */
+.inputs {
+    color: var(--nr04);
+    width: 200px;
+    vertical-align: bottom;
+}
+
+/* Floating Footer */
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    max-width: calc(100vw - 3em);
+    width: 78ch;
+    background-color: var(--nr00);
+    color: var(--nr04);
+    padding: 10px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.dat { color: var(--nr10); font-size: 10px; text-align: left;} /* date */
+.sta { color: var(--nr09); font-size: 10px; text-align: right;} /* status */
+
