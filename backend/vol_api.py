@@ -59,7 +59,13 @@ def volatility_plot_mwa(data):
     plt.gcf().autofmt_xdate()
 
     # Second subplot
-    sns.boxplot(data, notch=True, palette="vlag_r", ax=right)
+    sns.boxplot(
+        data,
+        notch=True,
+        palette="vlag_r",
+        fliersize=7,
+        flierprops={'marker':'x'},
+        ax=right)
     sns.stripplot(data, size=2, color=".3", ax=right)
     sns.lineplot(data.mean(axis=0), color="blue", zorder=5, label="mean", ax=right)
     sns.lineplot(data.iloc[-1], color="red", ax=right, label="current")

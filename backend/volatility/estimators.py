@@ -1,5 +1,6 @@
 """
 Volatility estimator class
+TODO add tests
 """
 import pandas as pd
 import yfinance as yf
@@ -34,19 +35,21 @@ class VolatilityEstimator(object):
         """
         result = pd.concat(
             [getattr(models, estimator).get_estimator(
-                price_data=price_data,
-                window=window,
-                clean=False
+            price_data=price_data,
+            window=window,
+            clean=False
             ) for estimator in self._estimators],
             axis=1
         )
         result['mean'] = result.dropna(axis=0).mean(axis=1, skipna=False)
-        result.columns = [f'{e}_{window}d' for e in self._estimators+['mean']]
+        result.columns = pd.MultiIndex.from_product(
+            [self._estimators + ['mean'], [window]],
+            names=['Estimator', 'Window'])
 
         if not components:
-            result = result.iloc[:, -1:]
+            result = result.loc[:, ['mean']]
 
-        result.index = price_data.index
+        result.index = price_data.index.strftime("%Y-%m-%d")
         return result
 
     def estimate(self, price_data, window, components=False, clean=True):
@@ -112,15 +115,18 @@ if __name__ == "__main__":
         start="2023-01-01",
         end="2023-06-01")
     ens = VolatilityEstimator(estimators=ESTIMATORS)
+
+    vols = ens.estimate(quotes, window=20, components=True, clean=False)
+    # print(vols)
+
     vols = ens.estimate(quotes, window=20, components=False, clean=False)
+    # print(vols)
 
-    print(vols)
-    print(vols.iloc[-1]["mean_20d"])
+    # print(vols.iloc[-1]["mean_20d"])
 
-    # ests = multi_window_estimates(
-    #         ens,
-    #         quotes,
-    #         windows=(60, 90),
-    #         components=False)
-    # print(ests.head())
-    # print(ests.iloc[-1])
+    ests = multi_window_estimates(
+            ens,
+            quotes,
+            windows=(60, 90),
+            components=True)
+    print(ests.head())
