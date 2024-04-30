@@ -22,33 +22,33 @@ def load_itm_dataframe():
     return pd.read_pickle(path)
 
 
-def generate_heatmap(df):
+def probs_heatmap(df):
     """
     Generate a heatmap from the given frame
     save as IO buffer and pass as base64 string
     """
 
-    original_shape = df.values.shape
-    labels = np.array([f"{v:.3f}" if v > 0.01 else '' for v in df.values.flatten()])
-    labels = labels.reshape(original_shape)
+    # original_shape = df.values.shape
+    # labels = np.array([f"{v:.4f}" if v > 0.01 else '' for v in df.values.flatten()])
+    # labels = labels.reshape(original_shape)
     df.replace(0, np.NaN, inplace=True)
 
-    plt.figure(figsize=(8,4), dpi=600)
+    plt.figure(figsize=(9,4), dpi=600)
     sns.heatmap(
         df,
-        annot=labels,
-        fmt='',
+        annot=True,
+        fmt='.4f',
         annot_kws={'size': 'small', 'alpha': 0.7},
-        linewidths=0.1,
+        linewidths=0.05,
         linecolor="#4c566a",
         cbar_kws={'shrink': 0.8},
         cbar=False,
         cmap='vlag')
-    plt.tick_params(axis='both', colors='#d8dee9')
-    plt.xticks(color='#d8dee9')
-    plt.yticks(color='#d8dee9')
-    plt.xlabel("delta bin", color='#d8dee9', fontweight='bold')
-    plt.ylabel("expiration", color='#d8dee9', fontweight='bold')
+    plt.tick_params(axis='both')
+    # plt.xticks()
+    # plt.yticks()
+    plt.xlabel("delta bin", fontweight='bold')
+    plt.ylabel("expiration", fontweight='bold')
 
     buf = BytesIO()
     plt.savefig(buf, format='svg', transparent=True)
@@ -87,7 +87,7 @@ def itm_stats(vix_open, otc_open):
         classes='dataframe',
         col_space=10,
     )
-    response['probs_heatmap'] = generate_heatmap(result)
+    response['probs_heatmap'] = probs_heatmap(result)
     response['total_samples'] = df.shape[0]
     response['group_samples'] = group_sizes.loc[(vix_bin, otc_bin)].values[0]
     response['min_date'] = df['quote_datetime'].min().strftime('%Y-%m-%d')
@@ -114,7 +114,7 @@ def get_otc_open():
     return otc.iloc[-1], otc.index[-1]
 
 
-def api_call():
+def api_itm():
     """
     API call return
     """

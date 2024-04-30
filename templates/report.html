@@ -13,24 +13,31 @@
     <table class="inputs">
         <tr>
             <td>VIX</td>
-            <td>{{ ctx['vix_open'] | quote }}</td>
-            <td class="dat">{{ ctx['vix_quote_date'] }}</td>
+            <td>{{ itm['vix_open'] | quote }}</td>
+            <td class="dat">{{ itm['vix_quote_date'] }}</td>
         </tr>
         <tr>
             <td>o2c</td>
-            <td>{{ ctx['otc_open'] | quote }}%</td>
-            <td class="dat">{{ ctx['otc_quote_date'] }}</td>
+            <td>{{ itm['otc_open'] | quote }}%</td>
+            <td class="dat">{{ itm['otc_quote_date'] }}</td>
         </tr>
     </table>
-    <!-- {{ ctx['lookup']['probs'] | safe }} -->
+    <!-- {{ itm['lookup']['probs'] | safe }} -->
     <img
-        src="data:image/svg+xml;base64,{{ ctx['lookup']['probs_heatmap'] }}"
+        src="data:image/svg+xml;base64,{{ itm['lookup']['probs_heatmap'] }}"
         alt="Probs heatmap image"
-        style="max-width: 100%; height: auto;"
     />
-    <p class="sta">{{ ctx['lookup']['group_samples'] }} samples out of {{ ctx['lookup']['total_samples'] }} | {{ ctx['lookup']['min_date'] }} to {{ ctx['lookup']['max_date'] }}</spa>
+    <p class="sta">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p>
+
+    <h1>Volatility</h1>
+    <br\>
+    <img
+        src="data:image/svg+xml;base64,{{ vol['mwa_plot'] }}"
+        alt="Volatility history"
+    />
+
 </body>
 <footer>
-    <p class="dat">Generated on {{ ctx['gen_timestamp'] }}</p>
+    <p class="dat">Generated on {{ itm['gen_timestamp'] }}</p>
 </footer>
 </html>
