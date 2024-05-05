@@ -4,7 +4,7 @@ TODO add tests
 """
 import pandas as pd
 import yfinance as yf
-from backend.volatility import models
+from volatility import models
 
 
 class VolatilityEstimator(object):
@@ -103,30 +103,36 @@ ESTIMATORS = [
     "close_to_close",
     "parkinson",
     "garman_klass",
-    "hodges_tompkins",
     "rogers_satchell",
     "yang_zhang",
 ]
 
 
 if __name__ == "__main__":
-    spx = yf.Ticker("^SPX")
-    quotes = spx.history(
-        start="2023-01-01",
-        end="2023-06-01")
+    # spx = yf.Ticker("^SPX")
+    # quotes = spx.history(
+    #     start="2023-01-01",
+    #     end="2023-06-01")
+    # quotes.to_pickle("data/spx.pkl")
+    quotes = pd.read_pickle("data/spx.pkl")
+    print(quotes.head())
+
     ens = VolatilityEstimator(estimators=ESTIMATORS)
 
     vols = ens.estimate(quotes, window=20, components=True, clean=False)
-    # print(vols)
+    print(vols.head())
 
     vols = ens.estimate(quotes, window=20, components=False, clean=False)
-    # print(vols)
+    print(vols.head())
 
-    # print(vols.iloc[-1]["mean_20d"])
 
-    ests = multi_window_estimates(
-            ens,
-            quotes,
-            windows=(60, 90),
-            components=True)
-    print(ests.head())
+    # ests = multi_window_estimates(
+    #         ens,
+    #         quotes,
+    #         windows=(60, 90),
+    #         components=True)
+    # print(ests.head())
+    # # print(ests.loc[:,["mean",60]])
+    # # Slice ests properly
+    # sliced_ests = ests.loc[:, ["mean", "60"]] if 60 in ests.columns.get_level_values('Window') else ests.loc[:, ["mean"]]
+    # print(sliced_ests)
