@@ -49,7 +49,6 @@ class VolatilityEstimator(object):
         if not components:
             result = result.loc[:, ['mean']]
 
-        result.index = price_data.index.strftime("%Y-%m-%d")
         return result
 
     def estimate(self, price_data, window, components=False, clean=True):
@@ -115,15 +114,19 @@ if __name__ == "__main__":
     #     end="2023-06-01")
     # quotes.to_pickle("data/spx.pkl")
     quotes = pd.read_pickle("data/spx.pkl")
-    print(quotes.head())
+    print(quotes.tail())
 
     ens = VolatilityEstimator(estimators=ESTIMATORS)
 
     vols = ens.estimate(quotes, window=20, components=True, clean=False)
-    print(vols.head())
+    # print(vols.tail())
 
-    vols = ens.estimate(quotes, window=20, components=False, clean=False)
-    print(vols.head())
+    vols = ens.estimate(quotes, window=20, components=True, clean=False)
+    # print(vols.tail())
+
+    sliced = vols.xs(20, level='Window', axis=1)
+    print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1).iloc[-1])
+    print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1))
 
 
     # ests = multi_window_estimates(

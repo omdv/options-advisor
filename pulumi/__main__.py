@@ -94,7 +94,7 @@ website_lambda = aws.lambda_.Function("websiteLambda",
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
             "BUCKET_NAME": website_bucket.id,
-            "FILE_NAME": "index.html"
+            "FILE_NAME": "index.html",
         }
     )
 )

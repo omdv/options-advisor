@@ -88,8 +88,8 @@ def itm_stats(vix_open, otc_open):
         col_space=10,
     )
     response['probs_heatmap'] = probs_heatmap(result)
-    response['total_samples'] = df.shape[0]
-    response['group_samples'] = group_sizes.loc[(vix_bin, otc_bin)].values[0]
+    response['total_samples'] = f"{df.shape[0]}"
+    response['group_samples'] = f"{group_sizes.loc[(vix_bin, otc_bin)].values[0]}"
     response['min_date'] = df['quote_datetime'].min().strftime('%Y-%m-%d')
     response['max_date'] = df['quote_datetime'].max().strftime('%Y-%m-%d')
     return response
@@ -133,4 +133,4 @@ def api_itm():
     return result
 
 if __name__ == '__main__':
-    print(itm_stats(15, 0.01))
+    print(itm_stats(14.510, 1.156))

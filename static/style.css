@@ -108,6 +108,6 @@ footer {
     text-align: center;
 }
 
-.dat { color: var(--nr10); font-size: 10px; text-align: left; vertical-align: bottom;} /* date */
-.sta { color: var(--nr09); font-size: 10px; text-align: right; vertical-align: bottom;} /* status */
+.dat { color: var(--base07); font-size: 10px; text-align: left; vertical-align: bottom;} /* date */
+.sta { color: var(--base07); font-size: 10px; text-align: right; vertical-align: bottom;} /* status */
 

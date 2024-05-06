@@ -16,6 +16,7 @@ seaborn = "^0.13.2"
 jupyterlab = "^4.1.8"
 pulumi = "^3.115.0"
 pulumi-aws = "^6.33.1"
+scipy = "^1.13.0"
 
 
 [build-system]

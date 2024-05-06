@@ -32,10 +32,19 @@
     <h1>Volatility</h1>
     <br\>
     <img
-        src="data:image/svg+xml;base64,{{ vol['mwa_plot'] }}"
+        src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
         alt="Volatility history"
     />
-
+    <br\>
+    <img
+        src="data:image/svg+xml;base64,{{ vol['estimators_boxplot'] }}"
+        alt="Estimators boxplot"
+    />
+    <br\>
+    <img
+        src="data:image/svg+xml;base64,{{ vol['zscore_vix'] }}"
+        alt="Z-score and VIX delta"
+    />
 </body>
 <footer>
     <p class="dat">Generated on {{ itm['gen_timestamp'] }}</p>

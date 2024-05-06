@@ -3,8 +3,8 @@ Main flask app
 TODO environment variable for pickle file
 """
 from flask import Flask, render_template
-from backend.itm_api import api_itm
-from backend.vol_api import api_vol
+from api_itm import api_itm
+from api_vol import api_vol
 
 app = Flask(__name__)
 
