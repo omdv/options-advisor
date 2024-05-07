@@ -23,22 +23,27 @@
 /* Media query for screens smaller than 600px */
 @media only screen and (max-width: 600px) {
     .dat, .sta {
-        font-size: 8px; /* Medium font size for medium screens */
+        font-size: 6px;
+        width: 70%;
+    }
+    img {
+        width: 70%;
     }
 }
 
 /* Media query for screens between 600px and 1200px */
 @media only screen and (min-width: 601px) and (max-width: 1200px) {
     .dat, .sta {
-        font-size: 10px; /* Medium font size for medium screens */
+        font-size: 8px; /* Medium font size for medium screens */
     }
 }
 
 /* Media query for screens larger than 1200px */
 @media only screen and (min-width: 1201px) {
     .dat, .sta {
-        font-size: 12px; /* Medium font size for medium screens */
+        font-size: 10px; /* Medium font size for medium screens */
     }
+
 }
 
 
@@ -50,9 +55,8 @@ html {
 }
 
 img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 body {
@@ -90,7 +94,7 @@ h1 {
 /* inputs table */
 .inputs {
     color: var(--nr04);
-    width: 200px;
+    width: 70%;
     vertical-align: bottom;
 }
 
@@ -106,6 +110,7 @@ footer {
     padding: 10px;
     margin: 0 auto;
     text-align: center;
+    background-color: solid;
 }
 
 .dat { color: var(--base07); font-size: 10px; text-align: left; vertical-align: bottom;} /* date */
