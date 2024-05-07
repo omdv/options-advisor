@@ -2,15 +2,19 @@
 Predicting probability of ITM for a given option
 this file supposed to be used as a standalone API
 """
+
+from io import BytesIO
+
 import os
 import base64
-from io import BytesIO
 
 import numpy as np
 import pandas as pd
-import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from api_quotes import get_quotes, get_vix_open, get_otc_open
+
 
 def load_itm_dataframe():
     """
@@ -28,9 +32,6 @@ def probs_heatmap(df):
     save as IO buffer and pass as base64 string
     """
 
-    # original_shape = df.values.shape
-    # labels = np.array([f"{v:.4f}" if v > 0.01 else '' for v in df.values.flatten()])
-    # labels = labels.reshape(original_shape)
     df.replace(0, np.NaN, inplace=True)
 
     plt.figure(figsize=(9,4), dpi=600)
@@ -38,7 +39,7 @@ def probs_heatmap(df):
         df,
         annot=True,
         fmt='.4f',
-        annot_kws={'size': 'small', 'alpha': 0.7},
+        annot_kws={'size': 'x-small', 'alpha': 0.7},
         linewidths=0.05,
         linecolor="#4c566a",
         cbar_kws={'shrink': 0.8},
@@ -78,6 +79,9 @@ def itm_stats(vix_open, otc_open):
     vix_bin = pd.cut([vix_open], bins=vix_bins, include_lowest=True)
     otc_bin = pd.cut([otc_open], bins=otc_bins, include_lowest=True)
 
+    print(vix_bin)
+    print(otc_bin)
+
     response = {}
 
     result = probs.loc[(vix_bin, otc_bin, slice(None))].reset_index(level=[0,1], drop=True)
@@ -93,25 +97,6 @@ def itm_stats(vix_open, otc_open):
     response['min_date'] = df['quote_datetime'].min().strftime('%Y-%m-%d')
     response['max_date'] = df['quote_datetime'].max().strftime('%Y-%m-%d')
     return response
-
-
-def get_vix_open():
-    """
-    Get the latest VIX open price
-    """
-    vix = yf.Ticker('^VIX')
-    hist = vix.history(period="1d")
-    return hist['Open'].iloc[-1], hist.index[-1]
-
-
-def get_otc_open():
-    """
-    Get the latest open to close price
-    """
-    spx = yf.Ticker('^SPX')
-    hist = spx.history(period="7d")
-    otc = (hist['Open']-hist['Close'].shift(1)) / hist['Close'].shift(1) * 100
-    return otc.iloc[-1], otc.index[-1]
 
 
 def api_itm():
@@ -132,5 +117,14 @@ def api_itm():
 
     return result
 
+
 if __name__ == '__main__':
-    print(itm_stats(14.510, 1.156))
+    spx = get_quotes('SPX', n_days=7)
+    print(spx)
+    # vix = get_market_quotes('^VIX', period="7d")
+    # print(spx)
+    # print(vix)
+    print(get_otc_open())
+    print(get_vix_open())
+    # print(get_spx_prev_close_and_open())
+    # print(api_itm())

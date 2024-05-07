@@ -9,17 +9,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
 import seaborn as sns
-import yfinance as yf
+
 from volatility.estimators import VolatilityEstimator, multi_window_estimates
-
-
-def get_market_quotes(ticker, period="1y"):
-    """
-    Get quotes for a given ticker
-    """
-    quotes = yf.Ticker(ticker).history(period=period)
-    quotes.index = pd.to_datetime(quotes.index.strftime('%Y-%m-%d'))
-    return quotes
+from api_quotes import get_quotes
 
 
 def to_percentage(value, _):
@@ -238,10 +230,10 @@ def vol_plot_zscore_vix(vols, vix):
     """
     data = vols.xs(("mean",30), level=["Estimator","Window"], axis=1)
     data.columns = ["mean"]
-    data = data.join(vix['Close'])
+    data = data.join(vix['close'])
     data['zscore'] = (data['mean'] - data['mean'].mean()) / data['mean'].std()
-    data['Close'] = data['Close']/100
-    data['vrp'] = data['Close'] - data['mean']
+    data['close'] = data['close']/100
+    data['vrp'] = data['close'] - data['mean']
 
     # Figure setup
     _, (ax1, ax2) = plt.subplots(2, 1, figsize=(9,4), dpi=600)
@@ -280,8 +272,8 @@ def api_vol():
 
     windows = [30, 60, 90, 120]
 
-    spx = get_market_quotes("^SPX")
-    vix = get_market_quotes("^VIX")
+    spx = get_quotes("SPX")
+    vix = get_quotes("VIX")
 
     ens = VolatilityEstimator(estimators=estimators)
     vols = multi_window_estimates(

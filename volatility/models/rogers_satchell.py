@@ -8,9 +8,9 @@ def get_estimator(price_data, window, trading_periods=252, clean=False):
     """
     Main method
     """
-    log_ho = (price_data['High'] / price_data['Open']).apply(np.log)
-    log_lo = (price_data['Low'] / price_data['Open']).apply(np.log)
-    log_co = (price_data['Close'] / price_data['Open']).apply(np.log)
+    log_ho = (price_data['high'] / price_data['open']).apply(np.log)
+    log_lo = (price_data['low'] / price_data['open']).apply(np.log)
+    log_co = (price_data['close'] / price_data['open']).apply(np.log)
 
     rs = log_ho * (log_ho - log_co) + log_lo * (log_lo - log_co)
 
