@@ -1,0 +1,37 @@
+version: '3'
+
+env:
+  LAMBDA_ROOT: ./pulumi/lambda
+  S3_ROOT: ./pulumi/s3
+
+tasks:
+  clean-lambda:
+    cmds:
+      - rm -rf $LAMBDA_ROOT
+      - mkdir -p $LAMBDA_ROOT
+    silent: true
+
+  pre-lambda:
+    cmds:
+      - task: clean-lambda
+      - cp html_report.py $LAMBDA_ROOT/main.py
+      - cp -r ./volatility/ $LAMBDA_ROOT/volatility
+      - cp api_* $LAMBDA_ROOT/
+      - cp io_utils.py $LAMBDA_ROOT/
+      - poetry export -f requirements.txt --output $LAMBDA_ROOT/requirements.txt --without-hashes --without dev
+      - pip install -r $LAMBDA_ROOT/requirements.txt -t $LAMBDA_ROOT --no-cache-dir --no-deps
+      - zip -r $LAMBDA_ROOT/lambda.zip $LAMBDA_ROOT
+    silent: true
+  
+  pre-s3:
+    cmds:
+      - rm -rf $S3_ROOT
+      - mkdir -p $S3_ROOT
+      - cp -r ./templates $S3_ROOT/
+      - cp -r ./static $S3_ROOT/
+      - cp -r ./data $S3_ROOT/
+    silent: true
+
+  default:
+    - task: pre-lambda
+    - task: pre-s3

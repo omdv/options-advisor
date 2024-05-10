@@ -4,3 +4,5 @@ __pycache__/
 .ipynb_checkpoints/
 Pulumi.dev.yaml
 .envrc
+pulumi/lambda
+pulumi/s3

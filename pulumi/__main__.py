@@ -1,9 +1,16 @@
 """An AWS Python Pulumi program"""
 
+import os
 import json
 import random
-import pulumi
 import pulumi_aws as aws
+import pulumi
+
+# Local resources
+S3_LOCAL_DIR = "./s3"
+S3_KEY_PREFIX = "/"
+LOCAL_LAMBDA_FILE = "./lambda/lambda.zip"
+S3_LAMBDA_KEY = "lambda.zip"
 
 # Configure the AWS region to deploy resources into.
 aws.config.region = "us-east-1"
@@ -21,7 +28,7 @@ website_bucket = aws.s3.Bucket("websiteBucket",
     website=aws.s3.BucketWebsiteArgs(
         index_document="index.html",
     ),
-    bucket="options-advisor-asdfghjk"
+    bucket=os.environ.get("S3_BUCKET_NAME", f"options-advisor-{random_suffix()}")
 )
 
 # Allow public access
@@ -50,13 +57,24 @@ bucket_policy = aws.s3.BucketPolicy("bucketPolicy",
     policy=public_read_policy
 )
 
-# Upload an index.html file to the bucket.
-index_page = aws.s3.BucketObject("index",
-    bucket=website_bucket.id,
-    source=pulumi.FileAsset("index.html"),
-    key="index.html",
-    content_type="text/html; charset=utf-8"
-)
+# Iterate over the files in the directory
+for root, dirs, files in os.walk(S3_LOCAL_DIR):
+    for filename in files:
+        # Construct the local file path
+        local_path = os.path.join(root, filename)
+
+        # Construct the S3 key
+        s3_key = os.path.join(
+            S3_KEY_PREFIX,
+            os.path.relpath(local_path, S3_LOCAL_DIR))
+
+        # Create a BucketObject for the file
+        file_object = aws.s3.BucketObject(s3_key,
+            bucket=website_bucket.id,
+            source=pulumi.FileAsset(local_path),
+            opts=pulumi.ResourceOptions(parent=website_bucket)
+        )
+
 
 # Create an IAM role and policy that grants the necessary permissions to the Lambda function.
 lambda_role = aws.iam.Role("lambdaRole",
@@ -85,15 +103,23 @@ lambda_policy = aws.iam.RolePolicy("lambdaPolicy",
         ).json),
 )
 
+# Upload lambda code to s3.
+lambda_archive = aws.s3.BucketObject("lambda_archive",
+    bucket=website_bucket.id,
+    source=pulumi.FileAsset(LOCAL_LAMBDA_FILE),
+    key=S3_LAMBDA_KEY
+)
+
 # Define the Lambda function that can modify website contents.
 website_lambda = aws.lambda_.Function("websiteLambda",
-    code=pulumi.FileArchive("./lambda"),
+    s3_bucket=website_bucket.id,
+    s3_key="lambda.zip",
     handler="main.handler",
     role=lambda_role.arn,
     runtime="python3.8",
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            "BUCKET_NAME": website_bucket.id,
+            "S3_BUCKET_NAME": website_bucket.id,
             "FILE_NAME": "index.html",
         }
     )
