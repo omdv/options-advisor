@@ -83,18 +83,21 @@ def vol_plot_trend_box(data):
     # Formatting
     ax1.yaxis.set_major_formatter(FuncFormatter(to_percentage))
     ax1.set_ylabel("")
+    ax1.set_xlabel("")
     ax1.legend(fontsize='small', loc='upper left')
-    ax2.set_ylabel("")
-    ax2.set_yticks([])
     ax1.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    plt.tight_layout()
+    ax2.set_ylabel("")
+    ax2.set_yticks([])
+    ax2.legend(fontsize='small', loc='lower right')
 
+    plt.tight_layout()
 
     buf = BytesIO()
     plt.savefig(buf, format='svg', transparent=True)
     buf.seek(0)
     return base64.b64encode(buf.read()).decode('utf-8')
+
 
 def vol_plot_trend_box_2(data):
     """
@@ -216,6 +219,7 @@ def vol_plot_est_boxplots(data):
     ax.yaxis.set_major_formatter(FuncFormatter(to_percentage))
     ax.set_ylabel("")
     ax.legend(fontsize='small', loc='upper right')
+
     plt.tight_layout()
 
     buf = BytesIO()
@@ -224,11 +228,11 @@ def vol_plot_est_boxplots(data):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 
-def vol_plot_zscore_vix(vols, vix):
+def vol_plot_zscore_vix(vols, vix, window):
     """
     Plot z-score of mean 30 days window estimator
     """
-    data = vols.xs(("mean",30), level=["Estimator","Window"], axis=1)
+    data = vols.xs(("mean", window), level=["Estimator","Window"], axis=1)
     data.columns = ["mean"]
     data = data.join(vix['close'])
     data['zscore'] = (data['mean'] - data['mean'].mean()) / data['mean'].std()
@@ -237,18 +241,19 @@ def vol_plot_zscore_vix(vols, vix):
 
     # Figure setup
     _, (ax1, ax2) = plt.subplots(2, 1, figsize=(9,4), dpi=600)
-    sns.lineplot(data['vrp'], color="red", ax=ax1, label="VIX - 30d mean")
-    sns.lineplot(data['zscore'], color="blue", ax=ax2, label="30d mean z-score")
+    sns.lineplot(data['vrp'], color="red", ax=ax1, label=f"VIX - {window}d mean")
+    sns.lineplot(data['zscore'], color="blue", ax=ax2, label=f"{window}d mean z-score")
 
     # Formatting
     ax1.set_xticks([])
     ax1.set_xlabel("")
-    ax1.yaxis.set_major_formatter(FuncFormatter(to_percentage))
     ax1.set_ylabel("")
-    ax2.set_ylabel("")
+    ax1.yaxis.set_major_formatter(FuncFormatter(to_percentage))
     ax1.legend(fontsize='small', loc='upper left')
-    ax2.legend(fontsize='small', loc='upper left')
 
+    ax2.set_xlabel("")
+    ax2.set_ylabel("")
+    ax2.legend(fontsize='small', loc='upper left')
 
     plt.tight_layout()
 
@@ -270,7 +275,8 @@ def api_vol():
         "yang_zhang",
     ]
 
-    windows = [30, 60, 90, 120]
+    windows = [10, 22, 66, 100]
+    window = 22 # for z-score plot
 
     spx = get_quotes("SPX")
     vix = get_quotes("VIX")
@@ -294,7 +300,7 @@ def api_vol():
     context['estimators_boxplot'] = vol_plot_est_boxplots(vols)
 
     # Third plot for z-score of 30-day mean estimator
-    context['zscore_vix'] = vol_plot_zscore_vix(vols, vix)
+    context['zscore_vix'] = vol_plot_zscore_vix(vols, vix, window)
 
     return context
 

@@ -46,8 +46,6 @@ def probs_heatmap(df):
         cbar=False,
         cmap='vlag')
     plt.tick_params(axis='both')
-    # plt.xticks()
-    # plt.yticks()
     plt.xlabel("delta bin", fontweight='bold')
     plt.ylabel("expiration", fontweight='bold')
 
@@ -75,6 +73,10 @@ def itm_stats(vix_open, otc_open):
         index=['vix_bins', 'otc_bins', 'expiration_weekday'],
         columns=['delta_bin'],
         aggfunc=np.mean)
+    
+    # sort both axis
+    probs = probs.sort_index()
+    probs = probs.sort_index(axis=1)
 
     vix_bin = pd.cut([vix_open], bins=vix_bins, include_lowest=True)
     otc_bin = pd.cut([otc_open], bins=otc_bins, include_lowest=True)

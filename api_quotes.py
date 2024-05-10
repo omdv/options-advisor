@@ -34,6 +34,7 @@ def get_quotes(ticker, n_days=252):
     data['datetime'] = pd.to_datetime(data['datetime'])
     data.set_index('datetime', inplace=True)
     data = data.apply(pd.to_numeric)
+    data.sort_index(ascending=True, inplace=True)
     return data
 
 

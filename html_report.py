@@ -1,27 +1,24 @@
 """
-Produce HTML report for the given data
-using jinja2 template
+Standalone renderer of jinja2 template
+template: report.html
+context: api_itm(), api_vol()
 """
+from jinja2 import Template
+from api_itm import api_itm
+from api_vol import api_vol
+from io_utils import save_to_s3, read_from_s3
 
-import os
-from jinja2 import Environment, FileSystemLoader
 
-# Define the templates directory
-templates_dir = os.path.dirname(os.path.abspath(__file__))
-j2_env = Environment(loader=FileSystemLoader(templates_dir), trim_blocks=True)
+def handler():
+    """
+    Render a jinja2 template
+    """
+    template = read_from_s3('templates/report.html')
 
-# Load the template
-template = j2_env.get_template('report.html')
+    template = Template(template)
+    context = {'itm': api_itm(), 'vol': api_vol()}
 
-# Define the data for the report
-data = {
-    'title': 'My Report',
-    'content': 'This is the content of my report.'
-}
+    rendered_template = template.render(context)
+    save_to_s3(rendered_template, 'index.html')
 
-# Render the template with the data
-html_report = template.render(data=data)
-
-# Write the HTML report to a file
-with open('report.html', 'w') as f:
-    f.write(html_report)
+    return rendered_template
