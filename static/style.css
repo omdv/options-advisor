@@ -22,34 +22,28 @@
 
 /* Media query for screens smaller than 600px */
 @media only screen and (max-width: 600px) {
-    .dat, .sta {
-        font-size: 6px;
-        width: 70%;
-    }
-    img {
-        width: 70%;
-    }
+    .dat, .sta { font-size: 6px; width: 70%; }
+    img { width: 60%; }
+    h2 { font-size: 10px; }
+    html {font-size: 8px; } 
 }
 
 /* Media query for screens between 600px and 1200px */
 @media only screen and (min-width: 601px) and (max-width: 1200px) {
-    .dat, .sta {
-        font-size: 8px; /* Medium font size for medium screens */
-    }
+    .dat, .sta { font-size: 8px; }
+    h2 { font-size: 12px; }
+    html {font-size: 10px;}
 }
 
 /* Media query for screens larger than 1200px */
 @media only screen and (min-width: 1201px) {
-    .dat, .sta {
-        font-size: 10px; /* Medium font size for medium screens */
-    }
-
+    .dat, .sta { font-size: 10px; }
+    h2 { font-size: 16px; }
+    html {font-size: 12px;}
 }
-
 
 html {
     font-family: sans-serif;
-    font-size: 14px;
     color: var(--base0);
     background-color: #FFF;
 }
@@ -71,24 +65,8 @@ p {
     padding: 0px;
 }
 
-h1 {
-    font-size: 16px;
-    margin: 0.5em 0;
-}
-
-/* dataframe table */
-.dataframe {
-    border-collapse: collapse;
-    font-size: 10px;
-    width: 100%;
-}
-.dataframe th, .dataframe td {
-    border: 1px solid var(--nr08);
-    text-align: left;
-    padding: 8px;
-}
-.dataframe tr:nth-child(even) {
-    background-color: var(--nr03);
+h2 {
+    margin-bottom: 0;
 }
 
 /* inputs table */
@@ -98,21 +76,6 @@ h1 {
     vertical-align: bottom;
 }
 
-/* Floating Footer */
-footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    max-width: calc(100vw - 3em);
-    width: 78ch;
-    background-color: var(--nr00);
-    color: var(--nr04);
-    padding: 10px;
-    margin: 0 auto;
-    text-align: center;
-    background-color: solid;
-}
-
-.dat { color: var(--base07); font-size: 10px; text-align: left; vertical-align: bottom;} /* date */
-.sta { color: var(--base07); font-size: 10px; text-align: right; vertical-align: bottom;} /* status */
+.dat { color: var(--base07); text-align: left; vertical-align: bottom;} /* date */
+.sta { color: var(--base07); text-align: right; vertical-align: bottom;} /* status */
 

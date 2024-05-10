@@ -4,33 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Assignment report</title>
+    <title>Volatility report</title>
 </head>
 
 <body>
-    <h2>Assignment statistics</h2>
-    <br\>
-    <table class="inputs">
-        <tr>
-            <td>VIX</td>
-            <td>{{ itm['vix_open'] | quote }}</td>
-            <td class="dat">{{ itm['vix_quote_date'] }}</td>
-        </tr>
-        <tr>
-            <td>o2c</td>
-            <td>{{ itm['otc_open'] | quote }}%</td>
-            <td class="dat">{{ itm['otc_quote_date'] }}</td>
-        </tr>
-    </table>
-    <!-- {{ itm['lookup']['probs'] | safe }} -->
-    <img
-        src="data:image/svg+xml;base64,{{ itm['lookup']['probs_heatmap'] }}"
-        alt="Probs heatmap image"
-    />
-    <p class="sta">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p>
-
     <br/>
     <h2>Volatility</h2>
+    <p class="dat">Generated on {{ itm['gen_timestamp'] }}</p>
     <br\>
     <img
         src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
@@ -46,8 +26,27 @@
         src="data:image/svg+xml;base64,{{ vol['zscore_vix'] }}"
         alt="Z-score and VIX delta"
     />
+    <br\>
+    <br\>
+    <h2>Assignment</h2>
+    <br\>
+    <table class="inputs">
+        <tr>
+            <td>VIX</td>
+            <td>{{ itm['vix_open'] | quote }}</td>
+            <td>{{ itm['vix_quote_date'] }}</td>
+        </tr>
+        <tr>
+            <td>o2c</td>
+            <td>{{ itm['otc_open'] | quote }}%</td>
+            <td>{{ itm['otc_quote_date'] }}</td>
+        </tr>
+    </table>
+    <!-- {{ itm['lookup']['probs'] | safe }} -->
+    <img
+        src="data:image/svg+xml;base64,{{ itm['lookup']['probs_heatmap'] }}"
+        alt="Probs heatmap image"
+    />
+    <p class="sta">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p>
 </body>
-<footer>
-    <p class="dat">Generated on {{ itm['gen_timestamp'] }}</p>
-</footer>
 </html>
