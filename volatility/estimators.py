@@ -3,8 +3,8 @@ Volatility estimator class
 TODO add tests
 """
 import pandas as pd
-import yfinance as yf
 from volatility import models
+from api_quotes import get_quotes
 
 
 class VolatilityEstimator(object):
@@ -100,18 +100,16 @@ def multi_window_estimates(
 
 ESTIMATORS = [
     "close_to_close",
-    "parkinson",
-    "garman_klass",
-    "rogers_satchell",
-    "yang_zhang",
+    # "parkinson",
+    # "garman_klass",
+    # "rogers_satchell",
+    # "yang_zhang",
+    "ewma"
 ]
 
 
 if __name__ == "__main__":
-    # spx = yf.Ticker("^SPX")
-    # quotes = spx.history(
-    #     start="2023-01-01",
-    #     end="2023-06-01")
+    # quotes = get_quotes("SPX")
     # quotes.to_pickle("data/spx.pkl")
     quotes = pd.read_pickle("data/spx.pkl")
     print(quotes.tail())
@@ -119,14 +117,14 @@ if __name__ == "__main__":
     ens = VolatilityEstimator(estimators=ESTIMATORS)
 
     vols = ens.estimate(quotes, window=20, components=True, clean=False)
-    # print(vols.tail())
+    print(vols.tail())
 
     vols = ens.estimate(quotes, window=20, components=True, clean=False)
-    # print(vols.tail())
+    print(vols.tail())
 
-    sliced = vols.xs(20, level='Window', axis=1)
-    print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1).iloc[-1])
-    print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1))
+    # sliced = vols.xs(20, level='Window', axis=1)
+    # print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1).iloc[-1])
+    # print(vols.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1))
 
 
     # ests = multi_window_estimates(

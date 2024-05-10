@@ -41,5 +41,4 @@ def get_estimator(price_data, window, trading_periods=252, clean=False):
 
     if clean:
         return result.dropna()
-    else:
-        return result
+    return result
