@@ -2,10 +2,11 @@
 Lambda related functions
 """
 import os
+from datetime import datetime as dt
+
 import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
-from datetime import datetime as dt
 
 def setup_ecr_repo():
     """
@@ -45,7 +46,6 @@ def setup_lambda_image(repo):
     Tag local docker image and upload to ECR
     
     """
-    # image_name = os.environ.get("LAMBDA_IMAGE_NAME")
     auth_token = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
 
     my_app_image = docker.Image("my-lambda-image",

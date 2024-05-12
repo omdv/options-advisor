@@ -71,9 +71,15 @@ def upload_files(website_bucket):
                 S3_KEY_PREFIX,
                 os.path.relpath(local_path, S3_LOCAL_DIR))
 
+            if filename.endswith(".css"):
+                content_type = "text/css"
+            else:
+                content_type = None
+
             # Create a BucketObject for the file
-            file_object = aws.s3.BucketObject(s3_key,
+            _ = aws.s3.BucketObject(s3_key,
                 bucket=website_bucket.id,
                 source=pulumi.FileAsset(local_path),
+                content_type=content_type,
                 opts=pulumi.ResourceOptions(parent=website_bucket)
             )
