@@ -6,3 +6,4 @@ Pulumi.dev.yaml
 .envrc
 pulumi/lambda
 pulumi/s3
+index.html

@@ -1,8 +1,8 @@
 version: '3'
 
 env:
-  LAMBDA_ROOT: ./pulumi/lambda
-  S3_ROOT: ./pulumi/s3
+  LAMBDA_ROOT: ./infra/lambda
+  S3_ROOT: ./infra/s3
 
 tasks:
   clean-lambda:
@@ -11,19 +11,19 @@ tasks:
       - mkdir -p $LAMBDA_ROOT
     silent: true
 
-  pre-lambda:
+  prep-lambda:
     cmds:
       - task: clean-lambda
-      - cp html_report.py $LAMBDA_ROOT/main.py
-      - cp -r ./volatility/ $LAMBDA_ROOT/volatility
+      - cp Dockerfile $LAMBDA_ROOT/
+      - cp lambda.py $LAMBDA_ROOT/
+      - cp -r ./volatility/ $LAMBDA_ROOT/
       - cp api_* $LAMBDA_ROOT/
       - cp io_utils.py $LAMBDA_ROOT/
-      - poetry export -f requirements.txt --output $LAMBDA_ROOT/requirements.txt --without-hashes --without dev
-      - pip install -r $LAMBDA_ROOT/requirements.txt -t $LAMBDA_ROOT --no-cache-dir --no-deps
-      - zip -r $LAMBDA_ROOT/lambda.zip $LAMBDA_ROOT
+      - poetry export -f requirements.txt --output $LAMBDA_ROOT/requirements.txt --without-hashes
+      - sed -i 's/;.*//g' $LAMBDA_ROOT/requirements.txt
     silent: true
-  
-  pre-s3:
+
+  prep-s3:
     cmds:
       - rm -rf $S3_ROOT
       - mkdir -p $S3_ROOT
@@ -33,5 +33,5 @@ tasks:
     silent: true
 
   default:
-    - task: pre-lambda
-    - task: pre-s3
+    - task: prep-s3
+    - task: prep-lambda
