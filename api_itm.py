@@ -4,8 +4,6 @@ this file supposed to be used as a standalone API
 """
 
 from io import BytesIO
-
-import os
 import base64
 
 import numpy as np
@@ -13,17 +11,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from api_quotes import get_quotes, get_vix_open, get_otc_open
-
-
-def load_itm_dataframe():
-    """
-    Load the lookup table from the given path
-    """
-    path = os.environ.get('ITM_PICKLE_PATH')
-    if path is None:
-        path = 'itm.pickle'
-    return pd.read_pickle(path)
+from api_quotes import get_vix_open, get_otc_open
+from io_utils import read_from_s3
 
 
 def probs_heatmap(df):
@@ -55,11 +44,10 @@ def probs_heatmap(df):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 
-def itm_stats(vix_open, otc_open):
+def itm_stats(df, vix_open, otc_open):
     """
     API-ready function
     """
-    df = load_itm_dataframe()
     df['vix_bins'], vix_bins = pd.qcut(df['vix_open'], q=4, retbins=True)
     df['otc_bins'], otc_bins = pd.qcut(df['open_to_close_pct'], q=4, retbins=True)
 
@@ -73,8 +61,7 @@ def itm_stats(vix_open, otc_open):
         index=['vix_bins', 'otc_bins', 'expiration_weekday'],
         columns=['delta_bin'],
         aggfunc=np.mean)
-    
-    # sort both axis
+
     probs = probs.sort_index()
     probs = probs.sort_index(axis=1)
 
@@ -101,14 +88,17 @@ def itm_stats(vix_open, otc_open):
     return response
 
 
-def api_itm():
+def api_itm(config):
     """
     API call return
     """
+    byte_content = read_from_s3(config, config['pickle_path'], decode=False)
+    df = pd.read_pickle(BytesIO(byte_content))
+
     result = {}
-    vix_open, vix_quote_date = get_vix_open()
-    otc_open, otc_quote_date = get_otc_open()
-    stats = itm_stats(vix_open, otc_open)
+    vix_open, vix_quote_date = get_vix_open(config)
+    otc_open, otc_quote_date = get_otc_open(config)
+    stats = itm_stats(df, vix_open, otc_open)
 
     result['gen_timestamp'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
     result['vix_open'] = vix_open
@@ -118,15 +108,3 @@ def api_itm():
     result['lookup'] = stats
 
     return result
-
-
-if __name__ == '__main__':
-    spx = get_quotes('SPX', n_days=7)
-    print(spx)
-    # vix = get_market_quotes('^VIX', period="7d")
-    # print(spx)
-    # print(vix)
-    print(get_otc_open())
-    print(get_vix_open())
-    # print(get_spx_prev_close_and_open())
-    # print(api_itm())

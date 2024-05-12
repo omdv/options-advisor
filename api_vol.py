@@ -263,7 +263,7 @@ def vol_plot_zscore_vix(vols, vix, window):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 
-def api_vol():
+def api_vol(config):
     """
     Main function to return volatility data
     """
@@ -278,8 +278,8 @@ def api_vol():
     windows = [10, 22, 66, 100]
     window = 22 # for z-score plot
 
-    spx = get_quotes("SPX")
-    vix = get_quotes("VIX")
+    spx = get_quotes(config, "SPX")
+    vix = get_quotes(config, "VIX")
 
     ens = VolatilityEstimator(estimators=estimators)
     vols = multi_window_estimates(
@@ -303,6 +303,3 @@ def api_vol():
     context['zscore_vix'] = vol_plot_zscore_vix(vols, vix, window)
 
     return context
-
-if __name__ == '__main__':
-    print(api_vol())
