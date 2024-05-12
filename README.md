@@ -6,4 +6,5 @@ Expected variables
 - TWELVEDATA_API_KEY
 
 TODO:
-- volatility models
+- time zone
+- hide behind cloudfront
