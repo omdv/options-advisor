@@ -103,8 +103,8 @@ def setup_lambda(lambda_image, website_bucket):
         package_type="Image",
         image_uri=lambda_image.image_name,
         role=lambda_role.arn,
-        memory_size=512,
-        timeout=600,
+        memory_size=1024,
+        timeout=120,
         environment=aws.lambda_.FunctionEnvironmentArgs(
             variables={
                 "MODE": "prod",
