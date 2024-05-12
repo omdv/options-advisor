@@ -14,11 +14,13 @@ def setup_ecr_repo():
     """
 
     # Create an ECR repository to store the Lambda function's Docker image.
-    repo_name = os.environ.get("AWS_ECR_REPO")
-    repo = aws.ecr.Repository(repo_name, image_tag_mutability="IMMUTABLE")
+    repo = aws.ecr.Repository(
+        "lambda-repo",
+        image_tag_mutability="IMMUTABLE"
+    )
 
     # Create a new ECR lifecycle policy to remove untagged images after 7 days.
-    _ = aws.ecr.LifecyclePolicy("lambdaLifecyclePolicy",
+    _ = aws.ecr.LifecyclePolicy("lambda-lifecycle-policy",
         repository=repo.name,
         policy="""{
             "rules": [
@@ -48,7 +50,7 @@ def setup_lambda_image(repo):
     """
     auth_token = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
 
-    my_app_image = docker.Image("my-lambda-image",
+    my_app_image = docker.Image("lambda-image",
         build=docker.DockerBuildArgs(
             context="lambda/",
             dockerfile="lambda/Dockerfile",
@@ -71,7 +73,7 @@ def setup_lambda(lambda_image, website_bucket):
     """
 
     # Create an IAM role and policy that grants the necessary permissions to the Lambda function.
-    lambda_role = aws.iam.Role("lambdaRole",
+    lambda_role = aws.iam.Role("lambda-role",
         assume_role_policy=aws.iam.get_policy_document(
             statements=[aws.iam.GetPolicyDocumentStatementArgs(
                 actions=["sts:AssumeRole"],
@@ -85,7 +87,7 @@ def setup_lambda(lambda_image, website_bucket):
     )
 
     # Define a policy that allows the lambda to modify the website's S3 bucket.
-    _ = aws.iam.RolePolicy("lambdaPolicy",
+    _ = aws.iam.RolePolicy("lambda-policy",
         role=lambda_role.id,
         policy=website_bucket.arn.apply(
             lambda arn: aws.iam.get_policy_document(
@@ -101,7 +103,7 @@ def setup_lambda(lambda_image, website_bucket):
     )
 
     # Create a new Lambda function from a Docker image on ECR.
-    website_lambda = aws.lambda_.Function("websiteLambda",
+    website_lambda = aws.lambda_.Function("lambda-function",
         package_type="Image",
         image_uri=lambda_image.image_name,
         role=lambda_role.arn,
@@ -118,7 +120,7 @@ def setup_lambda(lambda_image, website_bucket):
     )
 
     # Give the Lambda function permissions to be invoked.
-    _ = aws.lambda_.Permission("lambdaPermission",
+    _ = aws.lambda_.Permission("lambda-permission-to-s3",
         action="lambda:InvokeFunction",
         function=website_lambda.name,
         principal="s3.amazonaws.com",

@@ -12,12 +12,12 @@ def setup_cloudfront(website_bucket):
 
     # Create an Origin Access Identity (OAI) for our CloudFront distribution
     oai = aws.cloudfront.OriginAccessIdentity(
-        'my-oai',
+        'cloudfront-oai',
         comment='OAI for my static website')
 
     # Create a CloudFront distribution for the S3 bucket
     distribution = aws.cloudfront.Distribution(
-        'my-distribution',
+        'cloudfront-distribution',
         origins=[
             aws.cloudfront.DistributionOriginArgs(
                 origin_id=website_bucket.arn,
@@ -69,10 +69,9 @@ def setup_cloudfront(website_bucket):
 
     # Update the S3 bucket policy with the new policy JSON
     _ = aws.s3.BucketPolicy(
-        "bucketPolicy",
+        "s3-bucket-policy",
         bucket=website_bucket.id,
         policy=bucket_policy
     )
 
-    pulumi.export("CloudFront OAI", oai.id)
     return distribution

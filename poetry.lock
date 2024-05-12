@@ -2207,6 +2207,22 @@ pulumi = ">=3.0.0,<4.0.0"
 semver = ">=2.8.1"
 
 [[package]]
+name = "pulumi-random"
+version = "4.16.1"
+description = "A Pulumi package to safely use randomness in Pulumi programs."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pulumi_random-4.16.1-py3-none-any.whl", hash = "sha256:6d5a3a267de0ccb76e34ed362c261492c4c30c7e5ca676f8eb5cfcfc3b3a9d46"},
+    {file = "pulumi_random-4.16.1.tar.gz", hash = "sha256:f90fe3f58160802fa87137e7f0415b3204a294b75d8dfa779d64005e65c2fb83"},
+]
+
+[package.dependencies]
+parver = ">=0.2.1"
+pulumi = ">=3.0.0,<4.0.0"
+semver = ">=2.8.1"
+
+[[package]]
 name = "pure-eval"
 version = "0.2.2"
 description = "Safely evaluate AST nodes without side effects"
@@ -3030,4 +3046,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.10"
-content-hash = "89ef98bccee8e1ed6ac730b60fdbb9abb45347c261fdb882f61d77388948ca6a"
+content-hash = "9f1c8d73a71e0b3ac09daff1cbab8560313a67aff6cde804e8228deabd6971f5"
