@@ -7,6 +7,7 @@ import pulumi
 import s3_helper as s3h
 import lambda_helper as lmh
 import scheduler as sch
+import cloudfront as cf
 
 # Configure the AWS region to deploy resources into.
 aws.config.region = os.environ.get("AWS_REGION", "us-east-1")
@@ -23,8 +24,12 @@ website_lambda = lmh.setup_lambda(lambda_image, website_bucket)
 # Setup scheduler
 sch.schedule_lambda(website_lambda)
 
+# Setup CloudFront
+distribution = cf.setup_cloudfront(website_bucket)
+
 # Export the variables
 pulumi.export("S3 bucket", website_bucket.bucket)
-pulumi.export("Lambda image", lambda_image.image_name)
-pulumi.export("Lambda function", website_lambda.arn)
 pulumi.export("Website URL", website_bucket.website_endpoint)
+pulumi.export("Lambda image", lambda_image.image_name)
+pulumi.export('CloudFront ID', distribution.id)
+pulumi.export('CloudFront domain', distribution.domain_name)

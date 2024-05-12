@@ -7,4 +7,3 @@ Expected variables
 
 TODO:
 - time zone
-- hide behind cloudfront

@@ -90,13 +90,15 @@ def setup_lambda(lambda_image, website_bucket):
         policy=website_bucket.arn.apply(
             lambda arn: aws.iam.get_policy_document(
                 statements=[aws.iam.GetPolicyDocumentStatementArgs(
-                    actions=["s3:GetObject", "s3:PutObject"],
+                    actions=[
+                        "s3:GetObject",
+                        "s3:PutObject"
+                    ],
                     resources=[arn + "/*"],
                     effect="Allow",
                 )]
             ).json),
     )
-
 
     # Create a new Lambda function from a Docker image on ECR.
     website_lambda = aws.lambda_.Function("websiteLambda",

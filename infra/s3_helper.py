@@ -29,15 +29,24 @@ def create_bucket():
         bucket=os.environ.get("AWS_S3_BUCKET", f"options-advisor-{random_suffix()}")
     )
 
-    # Allow public access
+    # Block public access
     _ = aws.s3.BucketPublicAccessBlock(
         "allowPublicAccess",
         bucket=website_bucket.id,
-        block_public_policy=False)
+        block_public_acls=True,
+        block_public_policy=True,
+        ignore_public_acls=True,
+        restrict_public_buckets=True,
+    )
 
+
+def public_read_policy(website_bucket):
+    """
+    Create a public read policy for the S3 bucket.
+    """
 
     # Define the public read policy for the bucket.
-    public_read_policy = website_bucket.arn.apply(
+    policy = website_bucket.arn.apply(
         lambda arn: json.dumps({
             "Version": "2012-10-17",
             "Statement": [{
@@ -52,8 +61,9 @@ def create_bucket():
     # Apply the public read policy to the bucket.
     _ = aws.s3.BucketPolicy("bucketPolicy",
         bucket=website_bucket.id,
-        policy=public_read_policy
+        policy=policy
     )
+
     return website_bucket
 
 
@@ -83,3 +93,4 @@ def upload_files(website_bucket):
                 content_type=content_type,
                 opts=pulumi.ResourceOptions(parent=website_bucket)
             )
+    return None
