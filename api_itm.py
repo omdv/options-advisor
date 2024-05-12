@@ -68,9 +68,6 @@ def itm_stats(df, vix_open, otc_open):
     vix_bin = pd.cut([vix_open], bins=vix_bins, include_lowest=True)
     otc_bin = pd.cut([otc_open], bins=otc_bins, include_lowest=True)
 
-    print(vix_bin)
-    print(otc_bin)
-
     response = {}
 
     result = probs.loc[(vix_bin, otc_bin, slice(None))].reset_index(level=[0,1], drop=True)
