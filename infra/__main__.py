@@ -6,8 +6,9 @@ import pulumi
 
 import s3_helper as s3h
 import lambda_helper as lmh
-import scheduler as sch
+import lambda_schedule as sch
 import cloudfront as cf
+import route53 as r53
 
 # Configure the AWS region to deploy resources into.
 aws.config.region = os.environ.get("AWS_REGION", "us-east-1")
@@ -26,6 +27,9 @@ sch.schedule_lambda(website_lambda)
 
 # Setup CloudFront
 distribution = cf.setup_cloudfront(website_bucket)
+
+# Setup ACM
+r53.setup_dns(distribution)
 
 # Export the variables
 pulumi.export("S3 bucket", website_bucket.bucket)

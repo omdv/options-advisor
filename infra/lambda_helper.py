@@ -48,6 +48,7 @@ def setup_lambda_image(repo):
     Tag local docker image and upload to ECR
     
     """
+    version = os.environ.get("LAMBDA_VERSION", f'v{dt.now().strftime("%Y%m%d%H%M%S")}')
     auth_token = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
 
     my_app_image = docker.Image("lambda-image",
@@ -57,7 +58,7 @@ def setup_lambda_image(repo):
             platform="linux/amd64"
         ),
         image_name=repo.repository_url.apply(
-            lambda repository_url: f"{repository_url}:v{dt.now().strftime('%Y%m%d%H%M%S')}" #pylint: disable=line-too-long   
+            lambda repository_url: f"{repository_url}:{version}"
         ),
         registry=docker.RegistryArgs(
             password=pulumi.Output.secret(auth_token.password),

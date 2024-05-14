@@ -1,6 +1,7 @@
 """
 Cloudfront exposing static site hosted on S3
 """
+import os
 import json
 import pulumi
 import pulumi_aws as aws
@@ -10,6 +11,8 @@ def setup_cloudfront(website_bucket):
     Setting up cloudfront and permissions
     """
 
+    my_domain_name = os.environ.get("DOMAIN_NAME")
+
     # Create an Origin Access Identity (OAI) for our CloudFront distribution
     oai = aws.cloudfront.OriginAccessIdentity(
         'cloudfront-oai',
@@ -18,6 +21,7 @@ def setup_cloudfront(website_bucket):
     # Create a CloudFront distribution for the S3 bucket
     distribution = aws.cloudfront.Distribution(
         'cloudfront-distribution',
+        default_root_object='index.html',
         origins=[
             aws.cloudfront.DistributionOriginArgs(
                 origin_id=website_bucket.arn,
@@ -29,7 +33,6 @@ def setup_cloudfront(website_bucket):
         enabled=True,
         is_ipv6_enabled=True,
         comment='CloudFront distribution for my static website',
-        default_root_object='index.html',
         default_cache_behavior=aws.cloudfront.DistributionDefaultCacheBehaviorArgs(
             allowed_methods=['GET', 'HEAD'],
             cached_methods=['GET', 'HEAD'],
@@ -51,8 +54,10 @@ def setup_cloudfront(website_bucket):
         ),
         viewer_certificate=aws.cloudfront.DistributionViewerCertificateArgs(
             cloudfront_default_certificate=True,
-        ))
+        )
+    )
 
+    # Create a new bucket policy for the website bucket
     bucket_policy = pulumi.Output.all(website_bucket.arn, oai.id).apply(
         lambda args: json.dumps({
             "Version": "2012-10-17",
