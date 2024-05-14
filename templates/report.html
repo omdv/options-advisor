@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/style.css" type="text/css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var timestamp = document.querySelector('.timestamp');
+            var localTime = new Date(timestamp.textContent).toLocaleString();
+            timestamp.textContent = localTime;
+        });
+    </script>
     <title>Volatility report</title>
 </head>
 
 <body>
     <br/>
+    <p class="dat">Generated on <span class="timestamp">{{ timestamp }}</span></p>
+    <br/>
     <h2>Volatility</h2>
-    <p class="dat">Generated on {{ itm['gen_timestamp'] }}</p>
     <br\>
     <img
         src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"

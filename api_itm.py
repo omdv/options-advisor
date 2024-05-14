@@ -97,7 +97,6 @@ def api_itm(config):
     otc_open, otc_quote_date = get_otc_open(config)
     stats = itm_stats(df, vix_open, otc_open)
 
-    result['gen_timestamp'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
     result['vix_open'] = vix_open
     result['vix_quote_date'] = vix_quote_date.strftime('%Y-%m-%d')
     result['otc_open'] = otc_open

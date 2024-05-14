@@ -99,96 +99,6 @@ def vol_plot_trend_box(data):
     return base64.b64encode(buf.read()).decode('utf-8')
 
 
-def vol_plot_trend_box_2(data):
-    """
-    Moving average plot plus box plot
-    select only mean estimator
-    """
-
-    # Data preparation
-    data = data.xs("mean", level="Estimator", axis=1)
-    data.columns = data.columns.get_level_values(0)
-    min_window = data.columns.min()
-    max_window = data.columns.max()
-
-    # Figure setup
-    plt.figure(figsize=(9,5), dpi=600)
-    left, width = 0.09, 0.65
-    bottom, height = 0.1, 0.85
-    left_h = left+width+0.02
-    rect_left = [left, bottom, width, height]
-    rect_right = [left_h, bottom, 0.17, height]
-    left = plt.axes(rect_left)
-    right = plt.axes(rect_right)
-
-    # First subplot using Seaborn
-    sns.lineplot(
-        data,
-        palette="vlag_r",
-        errorbar="sd",
-        dashes=False,
-        ax=left)
-
-    # Fill areas between max and min windows
-    left.fill_between(
-        data.index,
-        data.loc[:,min_window],
-        data.loc[:,max_window],
-        where=(data.loc[:,min_window] > data.loc[:,max_window]),
-        color=sns.color_palette("coolwarm")[-1],
-        linewidth=0,
-        alpha=.2)
-
-    left.fill_between(
-        data.index,
-        data.loc[:,min_window],
-        data.loc[:,max_window],
-        where=(data.loc[:,min_window] <= data.loc[:,max_window]),
-        color=sns.color_palette("coolwarm")[0],
-        linewidth=0,
-        alpha=.2)
-
-
-    # Setting date-specific x-ticks every 20 days
-    end_date = pd.Timestamp('today')
-    start_date = end_date - pd.Timedelta(days=60)
-    left.set_xlim(start_date, end_date)
-
-    # Set x-axis major ticks to every 15 days
-    left.xaxis.set_major_locator(mdates.DayLocator(interval=15))
-    left.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    left.legend(fontsize='small', loc='upper left')
-
-    # Rotate date labels to prevent overlap
-    plt.gcf().autofmt_xdate()
-
-    # Second subplot
-    # means = data.mean(axis=0).values
-    currs = data.iloc[-1].values
-
-    sns.boxplot(
-        data,
-        notch=True,
-        palette="vlag_r",
-        fliersize=7,
-        flierprops={'marker':'x'},
-        ax=right)
-    sns.stripplot(data, size=2, color=".3", ax=right)
-    sns.lineplot(currs, color="red", label="current", ax=right)
-    right.legend().remove()
-
-    # change y-ticks
-    left.yaxis.set_major_formatter(FuncFormatter(to_percentage))
-    right.yaxis.set_major_formatter(FuncFormatter(to_percentage))
-    right.yaxis.tick_right()
-    right.set_ylabel("")
-
-    buf = BytesIO()
-    plt.savefig(buf, format='svg', transparent=True)
-    buf.seek(0)
-    return base64.b64encode(buf.read()).decode('utf-8')
-
-
 def vol_plot_est_boxplots(data):
     """
     Plot all estimators and windows in one plot
@@ -198,7 +108,7 @@ def vol_plot_est_boxplots(data):
     df_long.columns = ['Index', 'Estimator', 'Window', 'Value']
 
     # Plotting
-    _, ax = plt.subplots(figsize=(9,5), dpi=600)
+    _, ax = plt.subplots(figsize=(9,4), dpi=600)
     sns.boxplot(
         x='Window',
         y='Value',

@@ -6,7 +6,9 @@ context: api_itm(), api_vol()
 import logging
 import os
 import sys
+from datetime import datetime, timezone
 from jinja2 import Environment
+
 from api_itm import api_itm
 from api_vol import api_vol
 from io_utils import save_to_s3, read_from_s3
@@ -65,12 +67,18 @@ def handler(event, context):
     logger.info("API VOL: %s", vol.keys())
 
     context = {
+        'timestamp': datetime.now(timezone.utc).isoformat(timespec='seconds'),
         'itm': itm,
         'vol': vol
     }
 
     rendered_template = template.render(context)
-    save_to_s3(cfg, 'index.html', rendered_template, content_type='text/html')
+    save_to_s3(
+        cfg,
+        'index.html',
+        rendered_template,
+        content_type='text/html'
+    )
 
     logger.info("Rendered template saved to S3")
     return "Done"
