@@ -12,7 +12,7 @@ def schedule_lambda(website_lambda):
     # Create a CloudWatch Event Rule to trigger the Lambda function on a schedule.
     schedule_rule = aws.cloudwatch.EventRule(
         "cloudwatch-event-rule",
-        schedule_expression="cron(0/10 * * * ? *)",
+        schedule_expression="cron(50 13 * * ? *)",
     )
 
     # Add a target to the CloudWatch Event Rule that triggers the Lambda function.

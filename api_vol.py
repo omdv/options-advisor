@@ -4,7 +4,6 @@ TODO estimators to be configurable
 """
 import base64
 from io import BytesIO
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
