@@ -1,5 +1,5 @@
 """
-API for Volatility View
+API for Volatility Estimators
 TODO estimators to be configurable
 """
 import base64
@@ -10,7 +10,7 @@ from matplotlib.ticker import FuncFormatter
 import seaborn as sns
 
 from volatility.estimators import VolatilityEstimator, multi_window_estimates
-from api_quotes import get_quotes
+from api_quotes import get_historical_quotes
 
 
 def to_percentage(value, _):
@@ -125,7 +125,6 @@ def vol_plot_est_boxplots(data):
 
     # Formatting
     ax.yaxis.set_major_formatter(FuncFormatter(to_percentage))
-    ax.yaxis.set_major_formatter(FuncFormatter(to_percentage))
     ax.set_ylabel("")
     ax.legend(fontsize='small', loc='upper right')
 
@@ -141,6 +140,8 @@ def vol_plot_zscore_vix(vols, vix, window):
     """
     Plot z-score of mean 30 days window estimator
     """
+
+    # Data preparation
     data = vols.xs(("mean", window), level=["Estimator","Window"], axis=1)
     data.columns = ["mean"]
     data = data.join(vix['close'])
@@ -149,9 +150,25 @@ def vol_plot_zscore_vix(vols, vix, window):
     data['vrp'] = data['close'] - data['mean']
 
     # Figure setup
-    _, (ax1, ax2) = plt.subplots(2, 1, figsize=(9,4), dpi=600)
-    sns.lineplot(data['vrp'], color="red", ax=ax1, label=f"VIX - {window}d mean")
-    sns.lineplot(data['zscore'], color="blue", ax=ax2, label=f"{window}d mean z-score")
+    _, (ax1, ax2) = plt.subplots(
+        2, 1,
+        figsize=(9,4),
+        dpi=600
+    )
+
+    sns.lineplot(
+        data['vrp'],
+        color="red",
+        label=f"VIX - {window}d mean",
+        ax=ax1
+    )
+
+    sns.lineplot(
+        data['zscore'],
+        color="blue",
+        label=f"{window}d mean z-score",
+        ax=ax2
+    )
 
     # Formatting
     ax1.set_xticks([])
@@ -162,6 +179,8 @@ def vol_plot_zscore_vix(vols, vix, window):
 
     ax2.set_xlabel("")
     ax2.set_ylabel("")
+    ax2.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     ax2.legend(fontsize='small', loc='upper left')
 
     plt.tight_layout()
@@ -187,8 +206,8 @@ def api_vol(config):
     windows = [10, 22, 66, 100]
     window = 22 # for z-score plot
 
-    spx = get_quotes(config, "SPX")
-    vix = get_quotes(config, "VIX")
+    spx = get_historical_quotes(config, "^SPX")
+    vix = get_historical_quotes(config, "^VIX")
 
     ens = VolatilityEstimator(estimators=estimators)
     vols = multi_window_estimates(

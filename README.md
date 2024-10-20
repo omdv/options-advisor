@@ -7,12 +7,19 @@ Just go to [volstats.com](volstats.com).
 
 Or you can clone and `flask run`. You will need to comment out the part related to assignment statistics, as it uses my own large processed dataset from CBOE intraday options data.
 
-It expects the following variables to run locally:
-- `MODE`
-- `ITM_PICKLE_PATH`
-- `QUOTES_API_KEY`
+### Environment variables
+| Variable Name     | Description                                      |
+|-------------------|--------------------------------------------------|
+| `MODE`            | The mode in which the application runs.          |
+| `ITM_PICKLE_PATH` | Path to the pickle file for ITM data.            |
+| `QUOTES_API_KEY`  | API key for accessing market quotes.             |
 
-I am using TwelveData for market quotes, as it is more reliable than yahoo finance. Free tier should be sufficient, as it needs only EOD pricing at this point.
+### Market API options
+| API Name          | Description                                      |
+|-------------------|--------------------------------------------------|
+| `yahoo`           | Free. Reliability is not great.
+| `twelvedata`      | Has free tier but issues with indices since October.
+| `fmp`             | My current choice. $20/mo, includes calendar.
 
 
 ## Infra

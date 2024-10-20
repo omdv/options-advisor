@@ -21,7 +21,7 @@ def probs_heatmap(df):
     save as IO buffer and pass as base64 string
     """
 
-    df.replace(0, np.NaN, inplace=True)
+    df.replace(0, np.nan, inplace=True)
 
     plt.figure(figsize=(9,4), dpi=600)
     sns.heatmap(

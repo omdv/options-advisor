@@ -4,7 +4,7 @@ TODO add tests
 """
 import pandas as pd
 from volatility import models
-from api_quotes import get_quotes
+from api_quotes import get_historical_quotes
 
 
 class VolatilityEstimator(object):
@@ -22,12 +22,12 @@ class VolatilityEstimator(object):
             components):
         """
         Selector for volatility estimator
-        
+
         Parameters
         ----------
         window : int
             Rolling window for which to calculate the estimator
-        
+
         Returns
         -------
         y : pandas.DataFrame
@@ -72,7 +72,7 @@ def multi_window_estimates(
         components=False):
     """
     Calculate a volatility estimator for multiple windows
-    
+
     Parameters
     ----------
     estimator : str
@@ -81,7 +81,7 @@ def multi_window_estimates(
         Price data
     windows : tuple
         Tuple of window sizes for which to calculate the estimator
-    
+
     Returns
     -------
     y : pandas.DataFrame
