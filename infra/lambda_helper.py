@@ -46,9 +46,9 @@ def setup_ecr_repo():
 def setup_lambda_image(repo):
     """
     Tag local docker image and upload to ECR
-    
     """
     version = os.environ.get("LAMBDA_VERSION", f'v{dt.now().strftime("%Y%m%d%H%M%S")}')
+    # Get the login credentials for our Docker registry (ECR)
     auth_token = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
 
     my_app_image = docker.Image("lambda-image",
@@ -61,8 +61,9 @@ def setup_lambda_image(repo):
             lambda repository_url: f"{repository_url}:{version}"
         ),
         registry=docker.RegistryArgs(
+            username="AWS",
             password=pulumi.Output.secret(auth_token.password),
-            server=repo.repository_url,
+            server=repo.repository_url
         ))
     pulumi.export("imageName", my_app_image.image_name)
     return my_app_image
