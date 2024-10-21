@@ -15,7 +15,7 @@ tasks:
     cmds:
       - task: clean-lambda
       - cp Dockerfile $LAMBDA_ROOT/
-      - cp lambda.py $LAMBDA_ROOT/
+      - cp lambda_function.py $LAMBDA_ROOT/
       - cp -r ./volatility/ $LAMBDA_ROOT/
       - cp api_* $LAMBDA_ROOT/
       - cp io_utils.py $LAMBDA_ROOT/

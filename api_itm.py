@@ -52,7 +52,7 @@ def itm_stats(df, vix_open, otc_open):
     df['otc_bins'], otc_bins = pd.qcut(df['open_to_close_pct'], q=4, retbins=True)
 
     # for sample size
-    group_sizes = df.groupby(['vix_bins','otc_bins']).size()
+    group_sizes = df.groupby(['vix_bins','otc_bins'], observed=False).size()
 
     # get probabilities
     probs = pd.pivot_table(
@@ -60,7 +60,8 @@ def itm_stats(df, vix_open, otc_open):
         values='itm',
         index=['vix_bins', 'otc_bins', 'expiration_weekday'],
         columns=['delta_bin'],
-        aggfunc=np.mean)
+        aggfunc='mean',
+        observed=False)
 
     probs = probs.sort_index()
     probs = probs.sort_index(axis=1)

@@ -6,4 +6,14 @@ Pulumi.dev.yaml
 .envrc
 pulumi/lambda
 pulumi/s3
+index.html# Devenv
+.devenv*
+devenv.local.nix
+.lock
 index.html
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

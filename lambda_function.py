@@ -11,6 +11,7 @@ from jinja2 import Environment
 
 from api_itm import api_itm
 from api_vol import api_vol
+from api_garch import api_garch
 from io_utils import save_to_s3, read_from_s3
 
 # CloudWatch logging
@@ -28,7 +29,7 @@ def get_config():
         'mode': os.environ.get('MODE'),
         'bucket_name': os.environ.get('S3_BUCKET_NAME'),
         'pickle_path': os.environ.get('ITM_PICKLE_PATH'),
-        'quotes_api': os.environ.get('QUOTES_API_KEY')
+        'quotes_api_key': os.environ.get('QUOTES_API_KEY'),
     }
     logger.info("Config: %s", config)
     return config
@@ -60,16 +61,20 @@ def handler(event, context):
     template = env.from_string(template_source)
     logger.info("Template read from S3")
 
-    itm = api_itm(cfg)
-    logger.info("API ITM: %s", itm.keys())
+    itm_data = api_itm(cfg)
+    logger.info("API ITM: %s", itm_data.keys())
 
-    vol = api_vol(cfg)
-    logger.info("API VOL: %s", vol.keys())
+    vol_data = api_vol(cfg)
+    logger.info("API VOL: %s", vol_data.keys())
+
+    garch_data = api_garch(cfg)
+    logger.info("API GARCH: %s", garch_data.keys())
 
     context = {
         'timestamp': datetime.now(timezone.utc).isoformat(timespec='seconds'),
-        'itm': itm,
-        'vol': vol
+        'itm': itm_data,
+        'vol': vol_data,
+        'garch': garch_data
     }
 
     rendered_template = template.render(context)

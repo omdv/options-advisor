@@ -87,6 +87,7 @@ def forecast_plot(volatilities):
         alpha=0.1)
 
     plt.tight_layout()
+
     buf = BytesIO()
     plt.savefig(buf, format='svg', transparent=True)
     buf.seek(0)

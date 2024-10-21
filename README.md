@@ -7,14 +7,14 @@ Just go to [volstats.com](volstats.com).
 
 Or you can clone and `flask run`. You will need to comment out the part related to assignment statistics, as it uses my own large processed dataset from CBOE intraday options data.
 
-### Environment variables
+#### Environment variables
 | Variable Name     | Description                                      |
 |-------------------|--------------------------------------------------|
 | `MODE`            | The mode in which the application runs.          |
 | `ITM_PICKLE_PATH` | Path to the pickle file for ITM data.            |
 | `QUOTES_API_KEY`  | API key for accessing market quotes.             |
 
-### Market API options
+#### Market API options
 | API Name          | Description                                      |
 |-------------------|--------------------------------------------------|
 | `yahoo`           | Free. Reliability is not great.

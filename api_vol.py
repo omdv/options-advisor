@@ -12,6 +12,7 @@ import seaborn as sns
 from volatility.estimators import VolatilityEstimator, multi_window_estimates
 from api_quotes import get_historical_quotes
 
+plt.set_loglevel('WARNING')
 
 def to_percentage(value, _):
     """
