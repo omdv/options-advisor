@@ -9,7 +9,7 @@ pulumi/s3
 index.html# Devenv
 .devenv*
 devenv.local.nix
-.lock
+*.lock
 index.html
 
 # direnv
