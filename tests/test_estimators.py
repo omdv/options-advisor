@@ -2,8 +2,9 @@
 Unit tests for the estimators module.
 """
 
+import os
 import unittest
-import yfinance as yf
+from api_quotes import get_historical_quotes
 from volatility.estimators import VolatilityEstimator, multi_window_estimates
 
 ESTIMATORS = [
@@ -20,10 +21,14 @@ class TestEstimators(unittest.TestCase):
     testing on H1, 2023 spx data
     """
     def setUp(self):
-        spx = yf.Ticker("^SPX")
-        self.quotes = spx.history(
-            start="2023-01-01",
-            end="2023-06-01")
+        self.config = {}
+        self.config['quotes_api_key'] = os.environ.get('QUOTES_API_KEY')
+        spx = get_historical_quotes(
+            self.config,
+            '^SPX',
+            start_date = "2023-01-01",
+            end_date = "2023-06-01")
+        self.quotes = spx
         self.ens = VolatilityEstimator(estimators=ESTIMATORS)
         self.windows = (30, 60, 90)
 
@@ -34,11 +39,11 @@ class TestEstimators(unittest.TestCase):
         result = self.ens.estimate(self.quotes, window=20, components=False)
         self.assertEqual(
             result.xs((20, 'mean'), level=['Window', 'Estimator'], axis=1).iloc[-1].values[0],
-            0.1048614127148697)
-        self.assertEqual(result.shape, (83, 1))
+            0.1042617700348037)
+        self.assertEqual(result.shape, (84, 1))
 
         result = self.ens.estimate(self.quotes, window=20, components=True, clean=False)
-        self.assertEqual(result.shape, (103, 6))
+        self.assertEqual(result.shape, (104, 6))
 
 
 
@@ -53,7 +58,7 @@ class TestEstimators(unittest.TestCase):
             components=True)
         self.assertEqual(
             result.xs((60, 'mean'), level=['Window', 'Estimator'], axis=1).iloc[-1].values[0],
-            0.12725502562574045)
+            0.1267885190493656)
 
 if __name__ == "__main__":
     unittest.main()

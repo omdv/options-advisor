@@ -5,17 +5,16 @@ import requests
 import pandas as pd
 
 
-def get_historical_quotes(config, ticker, n_days=252):
+def get_historical_quotes(config, ticker, start_date=None, end_date=None, n_days=356):
     """
     Get quotes for a given ticker
-    Legacy:
-        quotes = yf.Ticker(ticker).history(period=period)
-        quotes.index = pd.to_datetime(quotes.index.strftime('%Y-%m-%d'))
-        return quotes
     """
     api_key = config['quotes_api_key']
-    end_date = pd.Timestamp.now().strftime('%Y-%m-%d')
-    start_date = (pd.Timestamp.now() - pd.Timedelta(days=n_days)).strftime('%Y-%m-%d')
+
+    if (start_date and end_date) is None:
+        end_date = pd.Timestamp.now().strftime('%Y-%m-%d')
+        start_date = (pd.Timestamp.now() - pd.Timedelta(days=n_days)).strftime('%Y-%m-%d')
+
     url = "https://financialmodelingprep.com/api/v3/historical-price-full/"
     url = url + f"{ticker}?from={start_date}&to={end_date}&apikey={api_key}"
 
@@ -84,7 +83,7 @@ def get_vix_open(config):
 def get_otc_open(config):
     """
     Get the Open to Prev.Close change for SPX
-    Legacy:
+    Current API: financialmodelingprep.com
     """
     quote = _get_last_quote(config, '^SPX')
     otc = (quote['open'] - quote['previous_close']) / quote['previous_close'] * 100

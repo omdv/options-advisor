@@ -32,6 +32,11 @@ tasks:
       - cp -r ./data $S3_ROOT/
     silent: true
 
+  tests:
+    cmds:
+      - python -m unittest discover -s tests
+    silent: true
+
   default:
     - task: prep-s3
     - task: prep-lambda
