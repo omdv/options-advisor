@@ -1,86 +1,13 @@
+@import "https://unpkg.com/chota@latest";
+
+/* Override chota default variables */
 :root {
-    /* Solarized Light Palette */
-    --base01: #fdf6e3; /* background */
-    --base02: #eee8d5; /* background highlight */
-    --base03: #93a1a1; /* comments / secondary content */
-    --base04: #839496; /* body text / default code / primary content */
-    --base05: #657b83; /* optional emphasized content */
-    --base06: #586e75; /* optional emphasized content */
-    --base07: #073642; /* backgrounds of space like panes */
-    --base08: #002b36; /* background highlights */
-    
-    /* Solarized Accent Colors (same for dark and light themes) */
-    --yel: #b58900;
-    --ora: #cb4b16;
-    --red: #dc322f;
-    --mag: #d33682;
-    --vio: #6c71c4;
-    --blu: #268bd2;
-    --cya: #2aa198;
-    --gre: #859900;
+  --color-primary: #ac94e2; /* brand color */
+  --grid-maxWidth: 108rem; /* max container width 1080px */
 }
 
-/* Media query for screens smaller than 600px */
-@media only screen and (max-width: 600px) {
-    .note { font-size: 6px; width: 70%; }
-    img { width: 60%; }
-    h2 { font-size: 10px; }
-    html {font-size: 8px; } 
-}
-
-/* Media query for screens between 600px and 1200px */
-@media only screen and (min-width: 601px) and (max-width: 1200px) {
-    .note { font-size: 8px; }
-    h2 { font-size: 12px; }
-    html {font-size: 10px;}
-}
-
-/* Media query for screens larger than 1200px */
-@media only screen and (min-width: 1201px) {
-    .note { font-size: 10px; }
-    h2 { font-size: 16px; }
-    html {font-size: 12px;}
-}
-
-html {
-    font-family: sans-serif;
-    color: var(--base0);
-    background-color: #FFF;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-body {
-    overflow-wrap: anywhere;
-    max-width: calc(150vw - 3em);
-    width: 90ch;
-    margin: 0 auto;
-}
-
-p {
-    margin: 0px;
-    padding: 0px;
-}
-
-h2 {
+/* Add any other overrides below */
+h1 {
     margin-bottom: 0;
-}
-
-/* inputs table */
-.inputs {
-    color: var(--nr04);
-    width: 70%;
-    vertical-align: bottom;
-}
-
-/* note */
-.note {
-    color: var(--base07);
-    text-align: right;
-    vertical-align: bottom;
-    margin-top: 10px;
-    margin-bottom: 10px
+    padding-bottom: 0;
 }

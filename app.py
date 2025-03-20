@@ -1,69 +1,55 @@
-"""
-Main flask app
-TODO environment variable for pickle file
-"""
+"""Main flask app."""
+
+from pathlib import Path
 from flask import Flask
-from lambda_function import get_config, handler
+
+from api_assistant import api_assistant
+from api_garch import api_garch
 from api_itm import api_itm
 from api_vol import api_vol
-from api_garch import api_garch
-from api_assistant import api_assistant
+from lambda_function import get_config, handler
 
 app = Flask(__name__)
 
-@app.route('/')
-def itm_report():
-    """
-    Generate index.html file and return it
-    """
-    handler({}, None)
+@app.route("/")
+def itm_report() -> str:
+  """Generate index.html file and return it."""
+  handler({}, None)
 
-    # Read the generated index.html file
-    with open('index.html', 'r') as file:
-        html_content = file.read()
-
-    return html_content
+  # Read the generated index.html file
+  with Path("index.html").open() as file:
+    return file.read()
 
 
-@app.route('/api/itm')
-def predict():
-    """
-    Predict ITM probability
-    """
-    config = get_config()
-    return api_itm(config)
+@app.route("/api/itm")
+def predict_itm() -> str:
+  """Predict ITM probability."""
+  config = get_config()
+  return api_itm(config)
 
 
-@app.route('/api/vol')
-def volatility():
-    """
-    Return volatility data
-    """
-    config = get_config()
-    return api_vol(config)
+@app.route("/api/vol")
+def volatility() -> str:
+  """Return volatility data."""
+  config = get_config()
+  return api_vol(config)
 
 
-@app.route('/api/garch')
-def garch():
-    """
-    Return GARCH data
-    """
-    config = get_config()
-    return api_garch(config)
+@app.route("/api/garch")
+def garch() -> str:
+  """Return GARCH data."""
+  config = get_config()
+  return api_garch(config)
 
 
-@app.route('/api/assistant')
-def assistant():
-    """
-    Return assistant data
-    """
-    config = get_config()
-    return api_assistant(config)
+@app.route("/api/assistant")
+def assistant() -> str:
+  """Return assistant data."""
+  config = get_config()
+  return api_assistant(config)
 
 
-@app.template_filter()
-def quote(value):
-    """
-    Formatter for quotes
-    """
-    return f"{value:,.2f}"
+@app.template_filter("quote")
+def quote(value: float) -> str:
+  """Formatter for quotes."""
+  return f"{value:,.2f}"

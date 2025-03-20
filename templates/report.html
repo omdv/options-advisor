@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/chota@latest"> -->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <link rel="stylesheet" href="static/style.css" type="text/css">
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -14,33 +15,66 @@
     <title>Volatility report</title>
 </head>
 
-<body>
-    <p class="note">Generated on <span class="timestamp">{{ timestamp }}</span></p>
-    <br/>
-    <h2>Volatility</h2>
-    <br\>
-    <img
-        src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
-        alt="Volatility estimators"
-    />
-    <br\>
-    <img
-        src="data:image/svg+xml;base64,{{ garch['garch_plot'] }}"
-        alt="GARCH fit and forecast"
-    />
-    <br\>
-    <img
-        src="data:image/svg+xml;base64,{{ vol['estimators_boxplot'] }}"
-        alt="Estimators boxplot"
-    />
-    <br\>
-    <img
-        src="data:image/svg+xml;base64,{{ vol['zscore_vix'] }}"
-        alt="Z-score and VIX delta"
-    />
-    <br\>
-    <br\>
-    <h2>Assignment</h2>
+<body class="">
+    <div id="top" class="container" role="document">
+        <div class="row">
+            <div class="col">
+                <h1>Volatility report</h1>
+                <p class="text-grey text-left">
+                    <small>Generated on <span class="timestamp">{{ timestamp }}</span></small>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h4>Volatility analysis</h4>
+                <figure>
+                    <img
+                        src="data:image/svg+xml;base64,{{ vol['estimators_boxplot'] }}"
+                        alt="Realized volatility (RV) boxplots"
+                    />
+                    <figcaption>Realized volatility (RV) determined by various estimators</figcaption>
+                    <p><a href="#top">[Top]</a></p>
+                </figure>
+                <br/>
+                <figure>
+                    <img
+                        src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
+                        alt="Mean realized volatility over multiple windows"
+                    />
+                    <figcaption>Mean realized volatility over multiple windows</figcaption>
+                    <p><a href="#top">[Top]</a></p>
+                </figure>
+                <br/>
+                <figure>
+                    <img
+                        src="data:image/svg+xml;base64,{{ vol['zscore_vix'] }}"
+                        alt="Z-score and VIX delta"
+                    />
+                    <figcaption>Mean RV (22 days) vs ^VIX and Z-score</figcaption>
+                    <p><a href="#top">[Top]</a></p>
+                </figure>
+                <br/>
+                <figure>
+                    <img
+                        src="data:image/svg+xml;base64,{{ garch['garch_plot'] }}"
+                        alt="GARCH(1,1) fit and forecast"
+                    />
+                    <figcaption>Annualized volatility GARCH(1,1) and forecast</figcaption>
+                    <p><a href="#top">[Top]</a></p>
+                </figure>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h4>Methodology</h4>
+                <p class="text-grey text-left">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- <h2>Assignment</h2>
     <br\>
     <table class="inputs">
         <tr>
@@ -53,12 +87,12 @@
             <td>{{ itm['otc_open'] | quote }}%</td>
             <td>{{ itm['otc_quote_date'] }}</td>
         </tr>
-    </table>
+    </table> -->
     <!-- {{ itm['lookup']['probs'] | safe }} -->
-    <img
+    <!-- <img
         src="data:image/svg+xml;base64,{{ itm['lookup']['probs_heatmap'] }}"
         alt="Probs heatmap image"
-    />
-    <p class="note">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p>
+    /> -->
+    <!-- <p class="note">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p> -->
 </body>
 </html>
