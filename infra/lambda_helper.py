@@ -1,6 +1,4 @@
-"""
-Lambda related functions
-"""
+"""Lambda related functions."""
 import os
 from datetime import datetime as dt
 
@@ -9,44 +7,39 @@ import pulumi_aws as aws
 import pulumi_docker as docker
 
 def setup_ecr_repo():
-    """
-    Setup ECR repository
-    """
+  """Set up ECR repository."""
+  # Create an ECR repository to store the Lambda function's Docker image.
+  repo = aws.ecr.Repository(
+    "lambda-repo",
+    image_tag_mutability="IMMUTABLE",
+  )
 
-    # Create an ECR repository to store the Lambda function's Docker image.
-    repo = aws.ecr.Repository(
-        "lambda-repo",
-        image_tag_mutability="IMMUTABLE"
-    )
-
-    # Create a new ECR lifecycle policy to remove untagged images after 7 days.
-    _ = aws.ecr.LifecyclePolicy("lambda-lifecycle-policy",
-        repository=repo.name,
-        policy="""{
-            "rules": [
-            {
-                "rulePriority": 1,
-                "description": "Keep only last 5 images",
-                "selection": {
-                    "tagStatus": "tagged",
-                    "tagPrefixList": ["v"],
-                    "countType": "imageCountMoreThan",
-                    "countNumber": 5
-                },
-                "action": {
-                    "type": "expire"
-                }
-            }
-            ]
-        }""",
-    )
-    return repo
+  # Create a new ECR lifecycle policy to remove untagged images after 7 days.
+  _ = aws.ecr.LifecyclePolicy("lambda-lifecycle-policy",
+    repository=repo.name,
+    policy="""{
+      "rules": [
+      {
+        "rulePriority": 1,
+        "description": "Keep only last 5 images",
+        "selection": {
+          "tagStatus": "tagged",
+          "tagPrefixList": ["v"],
+          "countType": "imageCountMoreThan",
+          "countNumber": 5
+        },
+        "action": {
+          "type": "expire"
+        }
+      }
+      ]
+    }""",
+  )
+  return repo
 
 
 def setup_lambda_image(repo):
-    """
-    Tag local docker image and upload to ECR
-    """
+    """Tag local docker image and upload to ECR."""
     version = os.environ.get("LAMBDA_VERSION", f'v{dt.now().strftime("%Y%m%d%H%M%S")}')
     # Get the login credentials for our Docker registry (ECR)
     auth_token = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
@@ -69,11 +62,11 @@ def setup_lambda_image(repo):
     return my_app_image
 
 
-def setup_lambda(lambda_image, website_bucket):
-    """
-    Setup roles and lambda
-    """
-
+def setup_lambda(
+        lambda_image: aws.lambda_.Function,
+        website_bucket: aws.s3.Bucket,
+    ) -> aws.lambda_.Function:
+    """Set up roles and lambda function."""
     # Create an IAM role and policy that grants the necessary permissions to the Lambda function.
     lambda_role = aws.iam.Role("lambda-role",
         assume_role_policy=aws.iam.get_policy_document(
@@ -84,7 +77,7 @@ def setup_lambda(lambda_image, website_bucket):
                     type="Service",
                     identifiers=["lambda.amazonaws.com"],
                 )],
-            )]
+            )],
         ).json,
     )
 
@@ -96,11 +89,11 @@ def setup_lambda(lambda_image, website_bucket):
                 statements=[aws.iam.GetPolicyDocumentStatementArgs(
                     actions=[
                         "s3:GetObject",
-                        "s3:PutObject"
+                        "s3:PutObject",
                     ],
                     resources=[arn + "/*"],
                     effect="Allow",
-                )]
+                )],
             ).json),
     )
 
@@ -116,9 +109,11 @@ def setup_lambda(lambda_image, website_bucket):
                 "MODE": "prod",
                 "S3_BUCKET_NAME": website_bucket.id,
                 "ITM_PICKLE_PATH": os.environ.get("ITM_PICKLE_PATH"),
-                "QUOTES_API_KEY": os.environ.get("QUOTES_API_KEY")
-            }
-        )
+                "QUOTES_API_KEY": os.environ.get("QUOTES_API_KEY"),
+                "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY"),
+                "NTFY_TOPIC": os.environ.get("NTFY_TOPIC"),
+            },
+        ),
     )
 
     # Give the Lambda function permissions to be invoked.

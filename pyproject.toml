@@ -29,6 +29,7 @@ indent-width = 2
 select = ["ALL"]
 ignore = [
   "I001",
+  "INP001",
 ]
 
 # Formatter settings
