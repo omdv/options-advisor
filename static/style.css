@@ -2,7 +2,7 @@
 
 /* Override chota default variables */
 :root {
-  --color-primary: #ac94e2; /* brand color */
+  --color-primary: #b09ff5; /* brand color */
   --grid-maxWidth: 108rem; /* max container width 1080px */
 }
 

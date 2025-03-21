@@ -81,3 +81,61 @@ def get_otc_open(config: dict) -> tuple[float, pd.Timestamp]:
   quote = _get_last_quote(config, "^SPX")
   otc = (quote["open"] - quote["previous_close"]) / quote["previous_close"] * 100
   return otc, quote["datetime"]
+
+
+def get_economic_events(config: dict) -> pd.DataFrame:
+  """Get economic events for current and next week."""
+  api_key = config["quotes_api_key"]
+  base_url = "https://financialmodelingprep.com/api/v3/economic_calendar"
+
+  # Calculate date ranges
+  today = pd.Timestamp.now()
+  start_date = today - pd.Timedelta(days=today.dayofweek)  # Start of current week
+  end_date = start_date + pd.Timedelta(days=13)  # End of next week
+
+  params = {
+      "from": start_date.strftime("%Y-%m-%d"),
+      "to": end_date.strftime("%Y-%m-%d"),
+      "apikey": api_key,
+  }
+
+  try:
+      response = requests.get(base_url, params=params, timeout=5)
+      response.raise_for_status()
+  except requests.exceptions.RequestException as e:
+      logger.error(f"Failed to fetch economic events: {e}")
+      return None
+
+  try:
+      events = response.json()
+      formatted_events = []
+      for event in events:
+        formatted_event = {
+          "date": event["date"],
+          "country": event["country"],
+          "event": event["event"],
+          "impact": event["impact"],
+          "actual": event["actual"],
+          "previous": event["previous"],
+          "estimate": event["estimate"],
+          "unit": event["unit"],
+        }
+        formatted_events.append(formatted_event)
+
+      df_events = pd.DataFrame(formatted_events)
+      df_events["date"] = pd.to_datetime(df_events["date"], utc=True)
+
+      # Only include US events
+      df_events = df_events[df_events["country"] == "US"]
+      df_events = df_events[(df_events["impact"] == "High")]
+      df_events = df_events.set_index("date")
+
+      del df_events["country"]
+      del df_events["unit"]
+
+      logger.debug(f"Economic events: {df_events}")
+      return df_events.sort_values("date")
+
+  except (ValueError, KeyError) as e:
+      logger.error(f"Failed to parse economic events: {e}")
+      return None

@@ -17,7 +17,7 @@ from volatility.estimators import VolatilityEstimator, multi_window_estimates
 logger.level("DEBUG")
 plt.set_loglevel("WARNING")
 
-def to_percentage(value: float, _: str) -> str:
+def to_percentage(value: float, _: str) -> dict:
   """Convert value to percentage."""
   return f"{100 * value:.1f}%"
 
@@ -97,10 +97,14 @@ def vol_plot_trend_box(data: pd.DataFrame) -> str:
   buf = BytesIO()
   plt.savefig(buf, format="svg", transparent=True)
   buf.seek(0)
-  return base64.b64encode(buf.read()).decode("utf-8")
+  plot = base64.b64encode(buf.read()).decode("utf-8")
 
+  return {
+    "plot": plot,
+    "data": None,
+  }
 
-def vol_plot_est_boxplots(data: pd.DataFrame) -> str:
+def vol_plot_est_boxplots(data: pd.DataFrame) -> dict:
   """Plot all estimators and windows in one plot."""
   # Create a mapping for more readable names
   estimator_names = {
@@ -159,14 +163,56 @@ def vol_plot_est_boxplots(data: pd.DataFrame) -> str:
   buf = BytesIO()
   plt.savefig(buf, format="svg", transparent=True)
   buf.seek(0)
-  return base64.b64encode(buf.read()).decode("utf-8")
+  plot = base64.b64encode(buf.read()).decode("utf-8")
 
+  # Create statistics table
+  stats_table = df_long.groupby(["Estimator", "Window"])["Value"].agg([
+    ("Q1", lambda x: x.quantile(0.25)),
+    ("median", "median"),
+    ("Q3", lambda x: x.quantile(0.75)),
+    ("min", "min"),
+    ("max", "max"),
+    ("last", "last"),
+  ])
+
+  # Calculate IQR and bounds
+  stats_table["IQR"] = stats_table["Q3"] - stats_table["Q1"]
+  stats_table["lower_fence"] = stats_table["Q1"] - 1.5 * stats_table["IQR"]
+  stats_table["upper_fence"] = stats_table["Q3"] + 1.5 * stats_table["IQR"]
+
+  # Calculate z-score equivalent using IQR method
+  stats_table["relative_position"] = (stats_table["last"] - stats_table["median"]) /\
+    stats_table["IQR"]
+
+  # Reorder columns
+  stats_table = stats_table[[
+    "Q1",
+    "median",
+    "Q3",
+    "IQR",
+    "lower_fence",
+    "upper_fence",
+    "min",
+    "max",
+    "last",
+    "relative_position",
+  ]]
+
+  # Format the values as percentages (except relative_position)
+  stats_table = stats_table.round(4) * 100
+  stats_table["relative_position"] = stats_table["relative_position"] / 100
+  stats_table["relative_position"] = stats_table["relative_position"].round(2)
+
+  return {
+    "plot": plot,
+    "data": stats_table,
+  }
 
 def vol_plot_zscore_vix(
   vols: pd.DataFrame,
   vix: pd.DataFrame,
   window: int,
-) -> str:
+) -> dict:
   """Plot z-score of mean 30 days window estimator."""
   # Data preparation
   data = vols.xs(("mean", window), level=["Estimator","Window"], axis=1)
@@ -216,8 +262,20 @@ def vol_plot_zscore_vix(
   buf = BytesIO()
   plt.savefig(buf, format="svg", transparent=True)
   buf.seek(0)
-  return base64.b64encode(buf.read()).decode("utf-8")
+  plot = base64.b64encode(buf.read()).decode("utf-8")
 
+  # Create export data
+  data = data.iloc[-14:]
+  export_data = pd.DataFrame({
+    "Date": data.index.strftime("%Y-%m-%d"),
+    "Volatility Risk Premium": data["vrp"].map("{:.2%}".format),
+    "Realized Volatility z-score": data["zscore"].map("{:.2f}".format),
+  })
+
+  return {
+    "plot": plot,
+    "data": export_data.to_dict("records"),
+  }
 
 def api_vol(config: dict) -> dict:
   """Return volatility data."""
@@ -248,13 +306,12 @@ def api_vol(config: dict) -> dict:
   context["end_date"] = spx.index.max().strftime("%Y-%m-%d")
   context["estimators"] = estimators
 
-  # First plot for mean estimtor
-  context["mean_mwa_plot"] = vol_plot_trend_box(vols)
+  context["mean_mwa_plot"] = vol_plot_trend_box(vols)["plot"]
 
-  # Second plot for all estimators
-  context["estimators_boxplot"] = vol_plot_est_boxplots(vols)
+  context["estimators_plot"] = vol_plot_est_boxplots(vols)["plot"]
+  context["estimators_data"] = vol_plot_est_boxplots(vols)["data"]
 
-  # Third plot for z-score of 30-day mean estimator
-  context["zscore_vix"] = vol_plot_zscore_vix(vols, vix, window)
+  context["zscore_vix_plot"] = vol_plot_zscore_vix(vols, vix, window)["plot"]
+  context["zscore_vix_data"] = vol_plot_zscore_vix(vols, vix, window)["data"]
 
   return context

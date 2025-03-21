@@ -3,7 +3,6 @@
 from pathlib import Path
 from flask import Flask
 
-from api_assistant import api_assistant
 from api_garch import api_garch
 from api_itm import api_itm
 from api_vol import api_vol

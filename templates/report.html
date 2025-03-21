@@ -1,98 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- <link rel="stylesheet" href="https://unpkg.com/chota@latest"> -->
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <link rel="stylesheet" href="static/style.css" type="text/css">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var timestamp = document.querySelector('.timestamp');
-            var localTime = new Date(timestamp.textContent).toLocaleString();
-            timestamp.textContent = localTime;
-        });
-    </script>
-    <title>Volatility report</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="static/style.css" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var timestamps = document.querySelectorAll('.timestamp');
+      timestamps.forEach(function(timestamp) {
+        var localTime = new Date(timestamp.textContent).toLocaleString();
+        timestamp.textContent = localTime;
+      });
+    });
+  </script>
+  <title>Volatility report</title>
 </head>
 
 <body class="">
-    <div id="top" class="container" role="document">
-        <div class="row">
-            <div class="col">
-                <h1>Volatility report</h1>
-                <p class="text-grey text-left">
-                    <small>Generated on <span class="timestamp">{{ timestamp }}</span></small>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h4>Volatility analysis</h4>
-                <figure>
-                    <img
-                        src="data:image/svg+xml;base64,{{ vol['estimators_boxplot'] }}"
-                        alt="Realized volatility (RV) boxplots"
-                    />
-                    <figcaption>Realized volatility (RV) determined by various estimators</figcaption>
-                    <p><a href="#top">[Top]</a></p>
-                </figure>
-                <br/>
-                <figure>
-                    <img
-                        src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
-                        alt="Mean realized volatility over multiple windows"
-                    />
-                    <figcaption>Mean realized volatility over multiple windows</figcaption>
-                    <p><a href="#top">[Top]</a></p>
-                </figure>
-                <br/>
-                <figure>
-                    <img
-                        src="data:image/svg+xml;base64,{{ vol['zscore_vix'] }}"
-                        alt="Z-score and VIX delta"
-                    />
-                    <figcaption>Mean RV (22 days) vs ^VIX and Z-score</figcaption>
-                    <p><a href="#top">[Top]</a></p>
-                </figure>
-                <br/>
-                <figure>
-                    <img
-                        src="data:image/svg+xml;base64,{{ garch['garch_plot'] }}"
-                        alt="GARCH(1,1) fit and forecast"
-                    />
-                    <figcaption>Annualized volatility GARCH(1,1) and forecast</figcaption>
-                    <p><a href="#top">[Top]</a></p>
-                </figure>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h4>Methodology</h4>
-                <p class="text-grey text-left">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-            </div>
-        </div>
+  <div id="top" class="container" role="document">
+    <div class="row">
+      <div class="col">
+        <h1>Volatility report</h1>
+        <p class="text-grey text-left">
+          <small>Generated on <span class="timestamp">{{ timestamp }}</span></small>
+        </p>
+      </div>
     </div>
-    <!-- <h2>Assignment</h2>
-    <br\>
-    <table class="inputs">
-        <tr>
-            <td>VIX</td>
-            <td>{{ itm['vix_open'] | quote }}</td>
-            <td>{{ itm['vix_quote_date'] }}</td>
-        </tr>
-        <tr>
-            <td>o2c</td>
-            <td>{{ itm['otc_open'] | quote }}%</td>
-            <td>{{ itm['otc_quote_date'] }}</td>
-        </tr>
-    </table> -->
-    <!-- {{ itm['lookup']['probs'] | safe }} -->
-    <!-- <img
-        src="data:image/svg+xml;base64,{{ itm['lookup']['probs_heatmap'] }}"
-        alt="Probs heatmap image"
-    /> -->
-    <!-- <p class="note">{{ itm['lookup']['group_samples'] }} samples out of {{ itm['lookup']['total_samples'] }} | {{ itm['lookup']['min_date'] }} to {{ itm['lookup']['max_date'] }}</p> -->
+    <div class="row">
+      <div class="col">
+        <h5>Summary</h5>
+        <p class="text-left">
+          {{ assistant['summary'] }}
+        </p>
+        <h5>Forecast</h5>
+        <p class="text-left">
+          {{ assistant['forecast'] }}
+        </p>
+        <table class="striped">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Upcoming event</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for event in assistant['events'] %}
+            <tr>
+              <td><span class="timestamp">{{ event[0] }}</span></td>
+              <td>{{ event[1] }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col">
+        <h4>Volatility analysis</h4>
+        <figure>
+          <img
+            src="data:image/svg+xml;base64,{{ vol['estimators_plot'] }}"
+            alt="Realized volatility (RV) boxplots"
+          />
+          <figcaption><p class="text-grey">Realized volatility (RV) determined by various estimators</p></figcaption>
+          <p><a href="#top">[Top]</a></p>
+        </figure>
+        <br/>
+        <figure>
+          <img
+            src="data:image/svg+xml;base64,{{ vol['mean_mwa_plot'] }}"
+            alt="Mean realized volatility over multiple windows"
+          />
+          <figcaption><p class="text-grey">Mean realized volatility over multiple windows</p></figcaption>
+          <p><a href="#top">[Top]</a></p>
+        </figure>
+        <br/>
+        <figure>
+          <img
+            src="data:image/svg+xml;base64,{{ vol['zscore_vix_plot'] }}"
+            alt="Z-score and VIX delta"
+          />
+          <figcaption><p class="text-grey">Mean RV (22 days) vs ^VIX and Z-score</p></figcaption>
+          <p><a href="#top">[Top]</a></p>
+        </figure>
+        <br/>
+        <figure>
+          <img
+            src="data:image/svg+xml;base64,{{ garch['garch_plot'] }}"
+            alt="GARCH(1,1) fit and forecast"
+          />
+          <figcaption><p class="text-grey">Annualized volatility GARCH(1,1) and forecast</p></figcaption>
+          <p><a href="#top">[Top]</a></p>
+        </figure>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="text-left">
+          <a href="https://ntfy.sh/volstats"><i class="fa-solid fa-bell"></i> daily reports</a><br/>
+          <a href="https://github.com/omdv/options-advisor"><i class="fa-brands fa-github"></i> omdv/options-advisor</a>
+        </p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
