@@ -19,8 +19,8 @@ tasks:
       - cp -r ./volatility/ $LAMBDA_ROOT/
       - cp api_* $LAMBDA_ROOT/
       - cp io_utils.py $LAMBDA_ROOT/
-      - poetry export -f requirements.txt --output $LAMBDA_ROOT/requirements.txt --without-hashes
-      - sed -i 's/;.*//g' $LAMBDA_ROOT/requirements.txt
+      - uv sync --no-dev && uv pip freeze > $LAMBDA_ROOT/requirements.txt
+      - uv sync
     silent: true
 
   prep-s3:
@@ -38,5 +38,6 @@ tasks:
     silent: true
 
   default:
+    - task: clean-lambda
     - task: prep-s3
     - task: prep-lambda

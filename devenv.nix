@@ -3,6 +3,7 @@
   packages = with pkgs; [
     pulumi-bin
     pre-commit
+    go-task
   ];
 
   languages.python = {

@@ -1,8 +1,8 @@
 name: options-advisor
 runtime:
   name: python
-  options:
-    virtualenv: venv
+  # options:
+  #   virtualenv: venv
 description: Serverless options advisor
 config:
   pulumi:tags:
