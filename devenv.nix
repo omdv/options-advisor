@@ -1,19 +1,25 @@
-{ pkgs, ... }: {
-  packages = [
-    pkgs.pulumi-bin
-    pkgs.go-task
+{ pkgs, ... }:
+{
+  packages = with pkgs; [
+    pulumi-bin
+    pre-commit
   ];
 
   languages.python = {
     enable = true;
-    poetry = {
+    package = pkgs.python313;
+
+    venv.enable = true;
+
+    uv = {
       enable = true;
-      install = {
-        enable = true;
-        groups = [ "main" "dev" ];
-        allExtras = true;
-      };
+      sync.enable = true;
     };
-    version = "3.10.10";
   };
+
+  # https://devenv.sh/tasks/
+  # tasks = {
+  #   "myproj:setup".exec = "mytool build";
+  #   "devenv:enterShell".after = [ "myproj:setup" ];
+  # };
 }
